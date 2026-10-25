@@ -1,0 +1,17 @@
+{
+  "0": "analyze_environment",
+  "1": "analysis_schema.py",
+  "2": "analysis.py",
+  "3": "test_api.py",
+  "4": "app.js",
+  "5": "environment_analyzer.py",
+  "8": "Graphify Knowledge Graph Rules",
+  "9": "Graph Navigation Token Optimization",
+  "10": "analysis/__init__.py",
+  "11": "api/__init__.py",
+  "12": "routes/__init__.py",
+  "13": "core/__init__.py",
+  "14": "app/__init__.py",
+  "15": "schemas/__init__.py",
+  "16": "tests/__init__.py"
+}

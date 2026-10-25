@@ -1,0 +1,211 @@
+/* ================================================================
+   ZONE PALETTE TOKENS  -  DESIGN_SYSTEM.md  3
+   ================================================================ */
+
+@property --bg { syntax: "<color>"; inherits: true; initial-value: #F2F4F3; }
+@property --surface { syntax: "<color>"; inherits: true; initial-value: #FFFFFF; }
+@property --surface-alt { syntax: "<color>"; inherits: true; initial-value: #E8EDEC; }
+@property --primary { syntax: "<color>"; inherits: true; initial-value: #0F766E; }
+@property --accent { syntax: "<color>"; inherits: true; initial-value: #38BDF8; }
+@property --text { syntax: "<color>"; inherits: true; initial-value: #1A2E2B; }
+@property --muted { syntax: "<color>"; inherits: true; initial-value: #6B7C79; }
+@property --border { syntax: "<color>"; inherits: true; initial-value: rgba(15, 118, 110, 0.15); }
+
+:root {
+  transition:
+    --bg           800ms ease,
+    --surface      800ms ease,
+    --surface-alt  800ms ease,
+    --primary      800ms ease,
+    --accent       800ms ease,
+    --text         800ms ease,
+    --muted        800ms ease,
+    --border       800ms ease;
+}
+
+*, *::before, *::after {
+  transition:
+    background-color 800ms ease,
+    color            800ms ease,
+    border-color     800ms ease,
+    box-shadow       800ms ease,
+    fill             800ms ease,
+    stroke           800ms ease;
+}
+
+/* ================================================================
+   1. DEFAULT - Neutral
+   ================================================================ */
+:root {
+  --bg:           #F2F4F3;
+  --surface:      #FFFFFF;
+  --surface-rgb:  255, 255, 255;
+  --surface-alt:  #E8EDEC;
+  --primary:      #0F766E;
+  --accent:       #38BDF8;
+  --text:         #1A2E2B;
+  --muted:        #6B7C79;
+  --border:       rgba(15, 118, 110, 0.15);
+  --shadow-color: 15, 118, 110;
+}
+:root[data-theme="dark"] {
+  --bg:           #0F172A;
+  --surface:      #1E293B;
+  --surface-rgb:  30, 41, 59;
+  --surface-alt:  #334155;
+  --primary:      #14B8A6;
+  --accent:       #7DD3FC;
+  --text:         #F8FAFC;
+  --muted:        #94A3B8;
+  --border:       rgba(20, 184, 166, 0.2);
+  --shadow-color: 0, 0, 0;
+}
+
+/* ================================================================
+   2. HOT_DRY - Sand, Terracotta
+   ================================================================ */
+:root[data-zone="HOT_DRY"] {
+  --bg:           #F4D9A8;
+  --surface:      #FDF3E3;
+  --surface-rgb:  253, 243, 227;
+  --surface-alt:  #EBC98A;
+  --primary:      #C8553D;
+  --accent:       #8B3A25;
+  --text:         #3B1F14;
+  --muted:        #7A5540;
+  --border:       rgba(200, 85, 61, 0.20);
+  --shadow-color: 59, 31, 20;
+}
+:root[data-zone="HOT_DRY"][data-theme="dark"] {
+  --bg:           #2D1A13;
+  --surface:      #3B221A;
+  --surface-rgb:  59, 34, 26;
+  --surface-alt:  #4A2D23;
+  --primary:      #E47A64;
+  --accent:       #FBBF24;
+  --text:         #FDF3E3;
+  --muted:        #D4A38E;
+  --border:       rgba(228, 122, 100, 0.25);
+  --shadow-color: 0, 0, 0;
+}
+
+/* ================================================================
+   3. WARM_HUMID - Teal, Lagoon
+   ================================================================ */
+:root[data-zone="WARM_HUMID"] {
+  --bg:           #062C2B;
+  --surface:      #0D3D3B;
+  --surface-rgb:  13, 61, 59;
+  --surface-alt:  #0F4F4D;
+  --primary:      #0F766E;
+  --accent:       #38BDF8;
+  --text:         #E0F7F6;
+  --muted:        #7ECCC7;
+  --border:       rgba(56, 189, 248, 0.20);
+  --shadow-color: 6, 44, 43;
+}
+:root[data-zone="WARM_HUMID"][data-theme="dark"] {
+  --bg:           #021212;
+  --surface:      #06201F;
+  --surface-rgb:  6, 32, 31;
+  --surface-alt:  #0A2E2C;
+  --primary:      #14B8A6;
+  --accent:       #7DD3FC;
+  --text:         #CCFBF1;
+  --muted:        #5EEAD4;
+  --border:       rgba(20, 184, 166, 0.25);
+  --shadow-color: 0, 0, 0;
+}
+
+/* ================================================================
+   4. COMPOSITE - Amber, Slate
+   ================================================================ */
+:root[data-zone="COMPOSITE"] {
+  --bg:           #334155;
+  --surface:      #3E5068;
+  --surface-rgb:  62, 80, 104;
+  --surface-alt:  #293547;
+  --primary:      #F59E0B;
+  --accent:       #84A98C;
+  --text:         #F8FAFC;
+  --muted:        #94A3B8;
+  --border:       rgba(245, 158, 11, 0.20);
+  --shadow-color: 51, 65, 85;
+}
+:root[data-zone="COMPOSITE"][data-theme="dark"] {
+  --bg:           #0F172A;
+  --surface:      #1E293B;
+  --surface-rgb:  30, 41, 59;
+  --surface-alt:  #0B1120;
+  --primary:      #FBBF24;
+  --accent:       #A7F3D0;
+  --text:         #F8FAFC;
+  --muted:        #CBD5E1;
+  --border:       rgba(251, 191, 36, 0.25);
+  --shadow-color: 0, 0, 0;
+}
+
+/* ================================================================
+   5. TEMPERATE - Fresh Green
+   ================================================================ */
+:root[data-zone="TEMPERATE"] {
+  --bg:           #F7F5EC;
+  --surface:      #FFFFFF;
+  --surface-rgb:  255, 255, 255;
+  --surface-alt:  #ECF9EE;
+  --primary:      #22C55E;
+  --accent:       #7DD3FC;
+  --text:         #1A2E1C;
+  --muted:        #5A7A5D;
+  --border:       rgba(34, 197, 94, 0.20);
+  --shadow-color: 34, 197, 94;
+}
+:root[data-zone="TEMPERATE"][data-theme="dark"] {
+  --bg:           #142416;
+  --surface:      #1C3320;
+  --surface-rgb:  28, 51, 32;
+  --surface-alt:  #25422A;
+  --primary:      #4ADE80;
+  --accent:       #BAE6FD;
+  --text:         #F0FDF4;
+  --muted:        #86EFAC;
+  --border:       rgba(74, 222, 128, 0.25);
+  --shadow-color: 0, 0, 0;
+}
+
+/* ================================================================
+   6. COLD - Ice Blue, Navy
+   ================================================================ */
+:root[data-zone="COLD"] {
+  --bg:           #0B1B33;
+  --surface:      #132240;
+  --surface-rgb:  19, 34, 64;
+  --surface-alt:  #1C2E50;
+  --primary:      #3B5B92;
+  --accent:       #BFE3F5;
+  --text:         #F4FAFD;
+  --muted:        #8AAAC8;
+  --border:       rgba(191, 227, 245, 0.15);
+  --shadow-color: 11, 27, 51;
+}
+:root[data-zone="COLD"][data-theme="dark"] {
+  --bg:           #020617;
+  --surface:      #0B132B;
+  --surface-rgb:  11, 19, 43;
+  --surface-alt:  #070E20;
+  --primary:      #60A5FA;
+  --accent:       #E0F2FE;
+  --text:         #EFF6FF;
+  --muted:        #93C5FD;
+  --border:       rgba(96, 165, 250, 0.25);
+  --shadow-color: 0, 0, 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { transition: none !important; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

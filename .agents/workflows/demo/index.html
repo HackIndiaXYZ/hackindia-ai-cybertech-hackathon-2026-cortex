@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A friendly welcome page — your first step into the web.">
+    <title>Welcome Home</title>
+    <style>
+        :root {
+            --bg: #0b1020;
+            --panel: #141a30;
+            --text: #e8ecf7;
+            --muted: #9aa4c4;
+            --accent: #6d8bff;
+            --accent-2: #a06bff;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 2rem;
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(1200px 600px at 15% -10%, rgba(109,139,255,.25), transparent 60%),
+                radial-gradient(900px 500px at 100% 110%, rgba(160,107,255,.22), transparent 55%),
+                var(--bg);
+        }
+
+        main {
+            max-width: 640px;
+            width: 100%;
+            text-align: center;
+            padding: 3rem 2rem;
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 20px;
+            background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.01));
+            box-shadow: 0 30px 80px rgba(0,0,0,.45);
+        }
+
+        .building {
+            width: 100%;
+            max-width: 320px;
+            margin: 0 auto 1.75rem;
+            display: block;
+            border-radius: 14px;
+            box-shadow: 0 20px 50px rgba(0,0,0,.4);
+        }
+
+        .badge {
+            display: inline-block;
+            margin-bottom: 1.25rem;
+            padding: .35rem .85rem;
+            font-size: .8rem;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--accent);
+            border: 1px solid rgba(109,139,255,.4);
+            border-radius: 999px;
+            background: rgba(109,139,255,.08);
+        }
+
+        h1 {
+            font-size: clamp(2rem, 6vw, 3rem);
+            line-height: 1.1;
+            letter-spacing: -.02em;
+            background: linear-gradient(90deg, var(--text), var(--accent), var(--accent-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        p {
+            margin-top: 1rem;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: var(--muted);
+        }
+
+        .actions {
+            margin-top: 2rem;
+            display: flex;
+            gap: .75rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        a.btn {
+            padding: .7rem 1.4rem;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform .15s ease, box-shadow .15s ease;
+        }
+
+        .btn-primary {
+            color: #fff;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+            box-shadow: 0 10px 30px rgba(109,139,255,.35);
+        }
+
+        .btn-ghost {
+            color: var(--text);
+            border: 1px solid rgba(255,255,255,.15);
+        }
+
+        a.btn:hover { transform: translateY(-2px); }
+
+        footer {
+            margin-top: 2rem;
+            font-size: .85rem;
+            color: var(--muted);
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <svg class="building" viewBox="0 0 320 200" role="img" aria-label="Illustration of a city building">
+            <defs>
+                <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#0b1020"/>
+                    <stop offset="1" stop-color="#1b2340"/>
+                </linearGradient>
+                <linearGradient id="tower" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#6d8bff"/>
+                    <stop offset="1" stop-color="#a06bff"/>
+                </linearGradient>
+            </defs>
+            <rect width="320" height="200" rx="14" fill="url(#sky)"/>
+            <circle cx="264" cy="46" r="18" fill="#e8ecf7" opacity="0.9"/>
+            <rect x="96" y="48" width="72" height="152" rx="4" fill="url(#tower)"/>
+            <rect x="180" y="96" width="60" height="104" rx="4" fill="#4d5f9c"/>
+            <rect x="52" y="120" width="40" height="80" rx="4" fill="#3a4878"/>
+            <g fill="#e8ecf7" opacity="0.85">
+                <rect x="108" y="64" width="10" height="10" rx="2"/>
+                <rect x="128" y="64" width="10" height="10" rx="2"/>
+                <rect x="148" y="64" width="10" height="10" rx="2"/>
+                <rect x="108" y="88" width="10" height="10" rx="2"/>
+                <rect x="128" y="88" width="10" height="10" rx="2"/>
+                <rect x="148" y="88" width="10" height="10" rx="2"/>
+                <rect x="108" y="112" width="10" height="10" rx="2"/>
+                <rect x="128" y="112" width="10" height="10" rx="2"/>
+                <rect x="148" y="112" width="10" height="10" rx="2"/>
+                <rect x="192" y="112" width="10" height="10" rx="2"/>
+                <rect x="212" y="112" width="10" height="10" rx="2"/>
+                <rect x="192" y="136" width="10" height="10" rx="2"/>
+                <rect x="212" y="136" width="10" height="10" rx="2"/>
+                <rect x="64" y="136" width="8" height="8" rx="2"/>
+                <rect x="78" y="136" width="8" height="8" rx="2"/>
+            </g>
+        </svg>
+        <span class="badge">Getting Started</span>
+        <h1>Welcome to Home</h1>
+        <p>This is your first HTML page. You've got the structure, the styling, and a place to begin — everything else is just an edit away.</p>
+        <div class="actions">
+            <a class="btn btn-primary" href="#">Get Started</a>
+            <a class="btn btn-ghost" href="#">Learn More</a>
+        </div>
+        <footer>Built with plain HTML &amp; CSS — no frameworks needed.</footer>
+    </main>
+</body>
+</html>
