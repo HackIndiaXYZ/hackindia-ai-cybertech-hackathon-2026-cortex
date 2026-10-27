@@ -1,9 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { pageVariants, staggerContainer, fadeUp } from "../motion/variants";
 import { useReducedMotion } from "../hooks/useReducedMotion";
 import { mockDesigns, DesignModel } from "../mock/designs";
-import { Heart, DollarSign, Shield, Leaf, CheckCircle2 } from "lucide-react";
+import { rankDesigns } from "../services/api";
+import { useLocationContext } from "../context/LocationContext";
+import { useClimateZone } from "../theme/ClimateThemeProvider";
+import { mapToThemeZone } from "../utils/climateMapping";
+import { Heart, DollarSign, Shield, Leaf, CheckCircle2, Loader } from "lucide-react";
 
 const CRITERIA = [
   { key: "comfort" as const, label: "Comfort", icon: Heart, color: "#EF4444" },
@@ -12,7 +16,7 @@ const CRITERIA = [
   { key: "sustainability" as const, label: "Sustainability", icon: Leaf, color: "#F59E0B" },
 ];
 
-function CompareColumn({ design, otherDesign }: { design: DesignModel, otherDesign: DesignModel }) {
+function CompareColumn({ design, otherDesign }: { design: DesignModel; otherDesign: DesignModel }) {
   const reduce = useReducedMotion();
   
   return (
@@ -66,11 +70,58 @@ function CompareColumn({ design, otherDesign }: { design: DesignModel, otherDesi
 
 export default function ComparePage() {
   const reduce = useReducedMotion();
+  const { analysis } = useLocationContext();
+  const { zone: themeZone } = useClimateZone();
+
+  // Resolve active zone
+  const activeZone =
+    (themeZone !== "NEUTRAL" ? themeZone : null) ??
+    (analysis ? mapToThemeZone(analysis.analysis.classification) : null) ??
+    "COMPOSITE";
+
+  const [designsList, setDesignsList] = useState<DesignModel[]>(mockDesigns);
+  const [isFallback, setIsFallback] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const [idxA, setIdxA] = useState(0);
   const [idxB, setIdxB] = useState(1);
-  
-  const designA = mockDesigns[idxA];
-  const designB = mockDesigns[idxB];
+
+  useEffect(() => {
+    let isCancelled = false;
+    setIsLoading(true);
+
+    rankDesigns(activeZone, undefined, 6)
+      .then((res) => {
+        if (isCancelled) return;
+        if (res?.designs && res.designs.length >= 2) {
+          setDesignsList(res.designs);
+          setIsFallback(false);
+        } else {
+          setDesignsList(mockDesigns);
+          setIsFallback(true);
+        }
+      })
+      .catch((err) => {
+        if (isCancelled) return;
+        console.warn("Could not fetch design rankings for comparison, using fallback:", err);
+        setDesignsList(mockDesigns);
+        setIsFallback(true);
+      })
+      .finally(() => {
+        if (!isCancelled) setIsLoading(false);
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [activeZone]);
+
+  // Ensure selected indices remain within bounds
+  const validIdxA = idxA < designsList.length ? idxA : 0;
+  const validIdxB = idxB < designsList.length ? (idxB === validIdxA ? (validIdxA + 1) % designsList.length : idxB) : Math.min(1, designsList.length - 1);
+
+  const designA = designsList[validIdxA] || mockDesigns[0];
+  const designB = designsList[validIdxB] || mockDesigns[1] || mockDesigns[0];
 
   return (
     <motion.main
@@ -81,23 +132,60 @@ export default function ComparePage() {
       style={{ padding: "var(--space-8) var(--space-6)", maxWidth: 1200, margin: "0 auto", paddingBottom: "100px" }}
     >
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "var(--space-8)", flexWrap: "wrap", gap: "var(--space-4)" }}>
-        <h1 style={{ fontSize: "var(--text-3xl)", margin: 0 }}>Compare Designs</h1>
+        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
+          <h1 style={{ fontSize: "var(--text-3xl)", margin: 0 }}>Compare Designs</h1>
+          {isLoading && (
+            <Loader size={18} color="var(--primary)" style={{ animation: "spin 1s linear infinite" }} />
+          )}
+          {isFallback ? (
+            <span
+              style={{
+                fontSize: "11px",
+                fontWeight: 700,
+                color: "var(--muted)",
+                background: "var(--border)",
+                padding: "2px 8px",
+                borderRadius: "var(--radius-full)",
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+              }}
+            >
+              demo data
+            </span>
+          ) : (
+            <span
+              style={{
+                fontSize: "11px",
+                fontWeight: 700,
+                color: "var(--primary)",
+                background: "rgba(var(--primary-rgb), 0.1)",
+                border: "1px solid rgba(var(--primary-rgb), 0.25)",
+                padding: "2px 8px",
+                borderRadius: "var(--radius-full)",
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+              }}
+            >
+              {activeZone.replace("_", " ")}
+            </span>
+          )}
+        </div>
         
         <div style={{ display: "flex", gap: "var(--space-4)" }}>
           <select 
-            value={idxA} 
+            value={validIdxA} 
             onChange={e => setIdxA(parseInt(e.target.value))}
             style={{ padding: "var(--space-2) var(--space-4)", borderRadius: "var(--radius-md)", border: "1px solid var(--border)", background: "var(--bg)", cursor: "pointer", fontWeight: 600 }}
           >
-            {mockDesigns.map((d, i) => <option key={d.id} value={i} disabled={i === idxB}>{d.name}</option>)}
+            {designsList.map((d, i) => <option key={d.id} value={i} disabled={i === validIdxB}>{d.name}</option>)}
           </select>
           <span style={{ display: "flex", alignItems: "center", fontWeight: 700, color: "var(--muted)" }}>VS</span>
           <select 
-            value={idxB} 
+            value={validIdxB} 
             onChange={e => setIdxB(parseInt(e.target.value))}
             style={{ padding: "var(--space-2) var(--space-4)", borderRadius: "var(--radius-md)", border: "1px solid var(--border)", background: "var(--bg)", cursor: "pointer", fontWeight: 600 }}
           >
-            {mockDesigns.map((d, i) => <option key={d.id} value={i} disabled={i === idxA}>{d.name}</option>)}
+            {designsList.map((d, i) => <option key={d.id} value={i} disabled={i === validIdxA}>{d.name}</option>)}
           </select>
         </div>
       </div>

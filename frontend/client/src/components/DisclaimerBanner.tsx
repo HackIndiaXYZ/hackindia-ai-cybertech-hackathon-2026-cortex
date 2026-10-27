@@ -1,14 +1,14 @@
-/**
- * DisclaimerBanner — always visible, never dismissable (DESIGN_SYSTEM §10.9)
+ï»¿/**
+ * DisclaimerBanner - always visible, never dismissable
  */
 export default function DisclaimerBanner() {
   return (
-    <footer className="disclaimer" role="contentinfo">
+    <aside className="disclaimer" role="note" aria-label="Guidance disclaimer">
       <p>
         <strong>Guidance only.</strong> This tool provides design guidance only.
         Consult a qualified architect and refer to local building codes before
         construction.
       </p>
-    </footer>
+    </aside>
   );
 }

@@ -1,0 +1,47 @@
+{
+  "source": "Simplified bioclimatic starting thresholds based on NBC 2016 Part 11 and ECBC 2017 principles",
+  "verified": false,
+  "description": "Simplified starting values to be calibrated against historical weather data and official zone maps.",
+  "hot_season_definition": "hottest_month_humidity",
+  "rules": [
+    {
+      "zone": "COLD",
+      "conditions": {
+        "coldest_month_mean_lt": 10.0,
+        "hottest_month_max_lt": 30.0
+      },
+      "description": "Cold winter with mean temp < 10°C and mild summer with max temp < 30°C"
+    },
+    {
+      "zone": "COMPOSITE",
+      "conditions": {
+        "hottest_month_max_gte": 35.0,
+        "coldest_month_min_lte": 10.0
+      },
+      "description": "Extreme seasons: hot summer (max >= 35°C) and cold winter (min <= 10°C)"
+    },
+    {
+      "zone": "HOT_DRY",
+      "conditions": {
+        "hottest_month_max_gte": 35.0,
+        "hot_season_humidity_lt": 50.0,
+        "annual_rain_lt": 600.0
+      },
+      "description": "Intense summer heat (max >= 35°C), low humidity (< 50%), and arid annual rainfall (< 600 mm)"
+    },
+    {
+      "zone": "WARM_HUMID",
+      "conditions": {
+        "hottest_month_max_gte": 28.0,
+        "hot_season_humidity_gte": 60.0,
+        "coldest_month_mean_gte": 18.0
+      },
+      "description": "Warm summer (max >= 28°C), high humidity (>= 60%), and mild/warm winter (mean >= 18°C)"
+    },
+    {
+      "zone": "TEMPERATE",
+      "conditions": {},
+      "description": "Moderate temperatures and comfortable conditions year-round"
+    }
+  ]
+}

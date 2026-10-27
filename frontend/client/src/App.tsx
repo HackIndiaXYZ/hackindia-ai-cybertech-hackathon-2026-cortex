@@ -4,6 +4,7 @@ import { LocationProvider } from "./context/LocationContext";
 import AnimatedBackground from "./components/AnimatedBackground";
 import NavBar from "./components/NavBar";
 import DisclaimerBanner from "./components/DisclaimerBanner";
+import Footer from "./components/Footer";
 import ZoneDebugSwitcher from "./components/ZoneDebugSwitcher";
 import HomePage from "./pages/HomePage";
 import DashboardPage from "./pages/DashboardPage";
@@ -46,10 +47,11 @@ export default function App() {
             }}
           >
             <NavBar />
-            <div style={{ flex: 1 }}>
+            <main style={{ flex: 1, display: "flex", flexDirection: "column" }}>
               <AnimatedRoutes />
-            </div>
+            </main>
             <DisclaimerBanner />
+            <Footer />
           </div>
         </BrowserRouter>
 

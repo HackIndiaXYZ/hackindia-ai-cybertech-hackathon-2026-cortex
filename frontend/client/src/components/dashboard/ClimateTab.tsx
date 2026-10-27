@@ -1,19 +1,17 @@
-﻿import { motion } from "framer-motion";
+import { useState, useEffect, useCallback } from "react";
+import { motion } from "framer-motion";
 import { mockClimateData, ClimateMonth } from "../../mock/climate";
 import { staggerContainer, fadeUp } from "../../motion/variants";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
-import { Thermometer, Droplets } from "lucide-react";
+import { Thermometer, Droplets, AlertTriangle, RefreshCw, Database } from "lucide-react";
+import { getClimate } from "../../services/api";
+import { useLocationContext } from "../../context/LocationContext";
 
 function CustomClimateChart({ data }: { data: ClimateMonth[] }) {
   const reduce = useReducedMotion();
   const maxRain = Math.ceil(Math.max(...data.map((d) => d.rain)) / 50) * 50 || 100;
   const maxTemp = Math.ceil(Math.max(...data.map((d) => d.temp)) / 10) * 10 || 40;
   
-  // Create line path points
-  
-  
-  // We actually need a smoother bezier curve or just use precise pixel coordinates
-  // It's easier to build SVG with viewbox 1000 300 for precise drawing.
   const chartWidth = 1000;
   const chartHeight = 300;
   
@@ -23,17 +21,15 @@ function CustomClimateChart({ data }: { data: ClimateMonth[] }) {
     return { x, y };
   });
 
-  // Catmull-Rom or simple Bezier can be used, but straight lines with curve is easier with Recharts. 
-  // Let's use simple SVG polyline for the line.
   const polylinePoints = svgPoints.map((p) => `${p.x},${p.y}`).join(' ');
 
   return (
     <div style={{ position: "relative", width: "100%", height: 350, display: "flex" }}>
       {/* Y-Axis Left (Temp) */}
       <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", height: chartHeight, paddingRight: "var(--space-2)", fontSize: "var(--text-xs)", color: "var(--muted)", textAlign: "right", width: 40, marginTop: 10 }}>
-        <span>{maxTemp}�</span>
-        <span>{maxTemp / 2}�</span>
-        <span>0�</span>
+        <span>{maxTemp}&deg;</span>
+        <span>{maxTemp / 2}&deg;</span>
+        <span>0&deg;</span>
       </div>
 
       <div style={{ flex: 1, position: "relative", height: chartHeight, marginTop: 10 }}>
@@ -114,9 +110,86 @@ function CustomClimateChart({ data }: { data: ClimateMonth[] }) {
   );
 }
 
+function ClimateSkeleton() {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-8)" }}>
+      <div className="card" style={{ padding: "var(--space-6)" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "var(--space-6)" }}>
+          <div style={{ width: 180, height: 24, background: "var(--border)", borderRadius: "var(--radius-sm)", opacity: 0.6 }} />
+          <div style={{ width: 140, height: 20, background: "var(--border)", borderRadius: "var(--radius-sm)", opacity: 0.4 }} />
+        </div>
+        <div style={{ height: 320, background: "rgba(0,0,0,0.03)", borderRadius: "var(--radius-md)", display: "flex", alignItems: "flex-end", gap: 16, padding: "var(--space-6)" }}>
+          {[40, 55, 70, 85, 95, 80, 65, 60, 50, 45, 35, 30].map((h, i) => (
+            <div key={i} style={{ flex: 1, height: `${h}%`, background: "var(--border)", opacity: 0.4, borderRadius: "4px 4px 0 0" }} />
+          ))}
+        </div>
+      </div>
+      <div className="card" style={{ padding: "var(--space-6)" }}>
+        <div style={{ width: 160, height: 24, background: "var(--border)", borderRadius: "var(--radius-sm)", opacity: 0.6, marginBottom: "var(--space-4)" }} />
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} style={{ height: 40, background: "rgba(0,0,0,0.03)", borderRadius: "var(--radius-md)", opacity: 0.5 }} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function ClimateTab() {
-  const data = mockClimateData;
+  const { analysis, location } = useLocationContext();
   const reduce = useReducedMotion();
+
+  const [climateData, setClimateData] = useState<ClimateMonth[] | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isFallback, setIsFallback] = useState<boolean>(false);
+
+  // Derive coordinates (prefer analysis location, then picker location, fallback to Delhi baseline)
+  const lat = analysis?.location?.latitude ?? location?.lat ?? 28.6139;
+  const lon = analysis?.location?.longitude ?? location?.lon ?? 77.2090;
+
+  const loadClimateData = useCallback(() => {
+    setIsLoading(true);
+    setError(null);
+
+    getClimate(lat, lon)
+      .then((res) => {
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const mapped: ClimateMonth[] = res.monthly_summary.map((m) => {
+          const avg = m.avg_temp_mean ?? (m.avg_temp_max && m.avg_temp_min ? (m.avg_temp_max + m.avg_temp_min) / 2 : 20);
+          return {
+            month: monthNames[m.month - 1] ?? m.month_name.slice(0, 3),
+            temp: Math.round(avg),
+            minTemp: Math.round(m.avg_temp_min ?? avg - 5),
+            maxTemp: Math.round(m.avg_temp_max ?? avg + 5),
+            rain: Math.round(m.avg_rainfall ?? 0),
+            humidity: Math.round(m.avg_humidity ?? 50),
+          };
+        });
+        setClimateData(mapped);
+        setIsFallback(false);
+      })
+      .catch((err) => {
+        console.warn("Could not fetch live historical climate, falling back to mock:", err);
+        setError("Live historical climate archive currently unavailable.");
+        setClimateData(mockClimateData);
+        setIsFallback(true);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [lat, lon]);
+
+  useEffect(() => {
+    loadClimateData();
+  }, [loadClimateData]);
+
+  if (isLoading && !climateData) {
+    return <ClimateSkeleton />;
+  }
+
+  const data = climateData ?? mockClimateData;
 
   const tableRowVariants = {
     hidden: { opacity: 0, y: 15 },
@@ -130,14 +203,91 @@ export default function ClimateTab() {
       animate="visible"
       style={{ display: "flex", flexDirection: "column", gap: "var(--space-8)" }}
     >
+      {/* Friendly Error banner if request failed but demo fallback is displayed */}
+      {error && (
+        <motion.div
+          variants={reduce ? undefined : fadeUp}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "var(--space-3) var(--space-4)",
+            background: "rgba(245, 158, 11, 0.1)",
+            border: "1px solid rgba(245, 158, 11, 0.3)",
+            borderRadius: "var(--radius-md)",
+            color: "#B45309",
+            fontSize: "var(--text-sm)",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
+            <AlertTriangle size={16} />
+            <span>{error} Showing baseline reference data.</span>
+          </div>
+          <button
+            onClick={loadClimateData}
+            style={{
+              background: "transparent",
+              border: "1px solid #B45309",
+              color: "#B45309",
+              padding: "2px 8px",
+              borderRadius: "var(--radius-sm)",
+              fontSize: "12px",
+              fontWeight: 600,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: 4,
+            }}
+          >
+            <RefreshCw size={12} /> Retry
+          </button>
+        </motion.div>
+      )}
+
       {/* Chart Section */}
       <motion.div variants={reduce ? undefined : fadeUp} className="card" style={{ padding: "var(--space-6)" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "var(--space-6)" }}>
-          <h3 style={{ margin: 0 }}>Annual Climate Averages</h3>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "var(--space-6)", flexWrap: "wrap", gap: "var(--space-3)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
+            <h3 style={{ margin: 0 }}>Annual Climate Averages</h3>
+            {isFallback ? (
+              <span
+                style={{
+                  background: "rgba(245, 158, 11, 0.12)",
+                  color: "#D97706",
+                  border: "1px solid rgba(245, 158, 11, 0.25)",
+                  padding: "2px 8px",
+                  borderRadius: "var(--radius-full)",
+                  fontSize: "11px",
+                  fontWeight: 600,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 4,
+                }}
+              >
+                <Database size={11} />
+                demo data
+              </span>
+            ) : (
+              <span
+                style={{
+                  background: "rgba(16, 185, 129, 0.12)",
+                  color: "#10B981",
+                  border: "1px solid rgba(16, 185, 129, 0.25)",
+                  padding: "2px 8px",
+                  borderRadius: "var(--radius-full)",
+                  fontSize: "11px",
+                  fontWeight: 700,
+                  letterSpacing: "0.03em",
+                }}
+              >
+                HISTORICAL ARCHIVE
+              </span>
+            )}
+          </div>
           <div style={{ display: "flex", gap: "var(--space-4)", fontSize: "var(--text-sm)" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", color: "var(--muted)" }}>
               <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#EF4444" }} />
-              Avg Temp (�C)
+              Avg Temp (&deg;C)
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", color: "var(--muted)" }}>
               <div style={{ width: 12, height: 12, borderRadius: 2, background: "#3B82F6" }} />
@@ -183,10 +333,10 @@ export default function ClimateTab() {
                 <td style={{ padding: "var(--space-3) var(--space-4)" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                     <Thermometer size={16} color="#EF4444" />
-                    <span style={{ fontWeight: 600 }}>{row.temp}�C</span>
+                    <span style={{ fontWeight: 600 }}>{row.temp}&deg;C</span>
                   </div>
                 </td>
-                <td style={{ padding: "var(--space-3) var(--space-4)", color: "var(--muted)" }}>{row.minTemp}� / {row.maxTemp}�</td>
+                <td style={{ padding: "var(--space-3) var(--space-4)", color: "var(--muted)" }}>{row.minTemp}&deg; / {row.maxTemp}&deg;</td>
                 <td style={{ padding: "var(--space-3) var(--space-4)" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                     <Droplets size={16} color="#3B82F6" />

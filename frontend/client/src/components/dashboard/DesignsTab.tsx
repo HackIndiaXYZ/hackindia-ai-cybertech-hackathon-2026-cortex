@@ -1,9 +1,14 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { Leaf, DollarSign, Shield, Heart, Eye, Cuboid, Trophy } from "lucide-react";
+import { Leaf, DollarSign, Shield, Heart, Eye, Cuboid, Trophy, Loader } from "lucide-react";
 import { mockDesigns, DesignScores } from "../../mock/designs";
+import type { DesignModel } from "../../services/analyzeService";
+import { rankDesigns } from "../../services/api";
 import { fadeUp, staggerContainer } from "../../motion/variants";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
+import { useLocationContext } from "../../context/LocationContext";
+import { useClimateZone } from "../../theme/ClimateThemeProvider";
+import { mapToThemeZone } from "../../utils/climateMapping";
 
 type WeightKey = keyof DesignScores;
 
@@ -46,37 +51,97 @@ function CountUpScore({ score }: { score: number }) {
   return <span>{display}</span>;
 }
 
+/** Map backend classification string -> zone code for design API */
+function classificationToZone(cls?: string | null): string {
+  if (!cls) return "COMPOSITE";
+  const map: Record<string, string> = {
+    "Cold": "COLD",
+    "Cold-Humid": "COLD",
+    "Hot-Dry": "HOT_DRY",
+    "Hot-Humid": "WARM_HUMID",
+    "Moderate": "TEMPERATE",
+    "Variable": "COMPOSITE",
+    "HOT_DRY": "HOT_DRY",
+    "WARM_HUMID": "WARM_HUMID",
+    "COLD": "COLD",
+    "TEMPERATE": "TEMPERATE",
+    "COMPOSITE": "COMPOSITE",
+  };
+  return map[cls] ?? mapToThemeZone(cls) ?? "COMPOSITE";
+}
+
 export default function DesignsTab() {
+  const { analysis } = useLocationContext();
+  const { zone: themeZone } = useClimateZone();
   const [weights, setWeights] = useState<DesignScores>({
     comfort: 25,
     cost: 25,
     safety: 25,
     sustainability: 25,
   });
+  const [apiDesigns, setApiDesigns] = useState<DesignModel[] | null>(null);
+  const [isLoadingDesigns, setIsLoadingDesigns] = useState(false);
   const reduce = useReducedMotion();
 
+  // Derive zone from latest analysis result or theme
+  const zone = analysis
+    ? classificationToZone(analysis.analysis.classification)
+    : themeZone !== "NEUTRAL"
+    ? themeZone
+    : "COMPOSITE";
+
+  // Debounce ref to call API with 300ms debounce on slider or preset change
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (!zone) return;
+
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setIsLoadingDesigns(true);
+      rankDesigns(zone, weights, 4)
+        .then((res) => setApiDesigns(res.designs))
+        .catch((err) => {
+          console.warn("Design ranking API unavailable, using local mock:", err);
+          setApiDesigns(null);
+        })
+        .finally(() => setIsLoadingDesigns(false));
+    }, 300);
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [zone, weights]);
+
   const handleWeightChange = (key: WeightKey, newValue: number) => {
+    const clampedVal = Math.max(0, Math.min(100, newValue));
     setWeights(prev => {
-      const next = { ...prev, [key]: newValue };
-      const remainder = 100 - newValue;
+      const next = { ...prev, [key]: clampedVal };
+      const remainder = 100 - clampedVal;
       const otherKeys = CRITERIA.map(c => c.key).filter(k => k !== key);
-      const otherSum = otherKeys.reduce((s, k) => s + prev[k], 0);
+      const otherSum = otherKeys.reduce((s, k) => s + (prev[k] ?? 0), 0);
       
       let allocated = 0;
       for (let i = 0; i < otherKeys.length - 1; i++) {
         const k = otherKeys[i];
-        const portion = otherSum > 0 ? prev[k] / otherSum : 1 / otherKeys.length;
-        const val = Math.round(remainder * portion);
+        const portion = otherSum > 0 ? (prev[k] ?? 0) / otherSum : 1 / otherKeys.length;
+        const val = Math.max(0, Math.min(remainder - allocated, Math.round(remainder * portion)));
         next[k] = val;
         allocated += val;
       }
       next[otherKeys[otherKeys.length - 1]] = Math.max(0, remainder - allocated);
+
+      // Final strict sum safeguard to ensure exactly 100%
+      const total = Object.values(next).reduce((a, b) => a + b, 0);
+      if (total !== 100) {
+        next[otherKeys[otherKeys.length - 1]] += (100 - total);
+      }
       return next;
     });
   };
 
-  // Rank designs based on weighted sum
-  const rankedDesigns = useMemo(() => {
+  // Client-side weighted sum applied to mock designs (used when API is unavailable)
+  const localRankedMock = useMemo(() => {
     return mockDesigns.map(design => {
       const score = 
         (design.scores.comfort * (weights.comfort / 100)) +
@@ -87,8 +152,13 @@ export default function DesignsTab() {
     }).sort((a, b) => b.totalScore - a.totalScore);
   }, [weights]);
 
+  // Use API response if available; backend already sorted by MCDM score
+  const rankedDesigns = apiDesigns ?? localRankedMock;
+
   // Podium logic: 2nd, 1st, 3rd (only take top 3)
-  const top3 = rankedDesigns.slice(0, 3);
+  const top3 = (rankedDesigns as Array<DesignModel & { totalScore: number }>)
+    .map(d => ({ ...d, totalScore: d.totalScore ?? 0 }))
+    .slice(0, 3);
   const podiumOrder = top3.length === 3 ? [top3[1], top3[0], top3[2]] : top3;
   // Map back to original rank for visual indicators
   const getRank = (id: string) => top3.findIndex(d => d.id === id) + 1;
@@ -166,7 +236,21 @@ export default function DesignsTab() {
 
       {/* Podium Display */}
       <motion.div variants={reduce ? undefined : fadeUp} style={{ marginTop: "var(--space-4)" }}>
-        <h2 style={{ fontSize: "var(--text-2xl)", margin: "0 0 var(--space-6)", textAlign: "center" }}>Top Recommended Designs</h2>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "var(--space-3)", marginBottom: "var(--space-6)" }}>
+          <h2 style={{ fontSize: "var(--text-2xl)", margin: 0, textAlign: "center" }}>Top Recommended Designs</h2>
+          {isLoadingDesigns && (
+            <Loader size={18} color="var(--muted)" style={{ animation: "spin 1s linear infinite", flexShrink: 0 }} />
+          )}
+          {apiDesigns && !isLoadingDesigns ? (
+            <span style={{ fontSize: "var(--text-xs)", color: "var(--primary)", fontWeight: 700, background: "rgba(var(--primary-rgb), 0.1)", border: "1px solid rgba(var(--primary-rgb), 0.25)", borderRadius: "var(--radius-full)", padding: "2px 10px" }}>
+              LIVE
+            </span>
+          ) : !isLoadingDesigns ? (
+            <span style={{ fontSize: "var(--text-xs)", color: "var(--muted)", fontWeight: 700, background: "var(--border)", borderRadius: "var(--radius-full)", padding: "2px 10px", textTransform: "uppercase" }}>
+              demo data
+            </span>
+          ) : null}
+        </div>
         
         <div style={{ 
           display: "flex", 

@@ -1,0 +1,71 @@
+{
+  "source": "EcoShelter MCDM Optimization Presets",
+  "verified": false,
+  "placeholder_note": "Presets reflect domain-specific design priority vectors to be validated with field stakeholders.",
+  "presets": {
+    "Balanced": {
+      "label": "Balanced",
+      "description": "Equally distributes optimization weight across comfort, economic cost efficiency, structural safety, and sustainability.",
+      "weights": {
+        "comfort": 0.25,
+        "cost": 0.25,
+        "safety": 0.25,
+        "sustainability": 0.25
+      },
+      "weights_percent": {
+        "comfort": 25,
+        "cost": 25,
+        "safety": 25,
+        "sustainability": 25
+      }
+    },
+    "Low cost": {
+      "label": "Low Cost",
+      "description": "Maximizes financial affordability by heavily weighting low-cost vernacular and standardized construction methods.",
+      "weights": {
+        "comfort": 0.15,
+        "cost": 0.55,
+        "safety": 0.15,
+        "sustainability": 0.15
+      },
+      "weights_percent": {
+        "comfort": 15,
+        "cost": 55,
+        "safety": 15,
+        "sustainability": 15
+      }
+    },
+    "Safety first": {
+      "label": "Safety First",
+      "description": "Focuses on structural robustness, high impact resistance, and durability against extreme weather risks.",
+      "weights": {
+        "comfort": 0.15,
+        "cost": 0.15,
+        "safety": 0.55,
+        "sustainability": 0.15
+      },
+      "weights_percent": {
+        "comfort": 15,
+        "cost": 15,
+        "safety": 55,
+        "sustainability": 15
+      }
+    },
+    "Eco friendly": {
+      "label": "Eco Friendly",
+      "description": "Prioritizes minimal embodied carbon, circular renewable materials, and low-impact ecological building strategies.",
+      "weights": {
+        "comfort": 0.20,
+        "cost": 0.10,
+        "safety": 0.10,
+        "sustainability": 0.60
+      },
+      "weights_percent": {
+        "comfort": 20,
+        "cost": 10,
+        "safety": 10,
+        "sustainability": 60
+      }
+    }
+  }
+}

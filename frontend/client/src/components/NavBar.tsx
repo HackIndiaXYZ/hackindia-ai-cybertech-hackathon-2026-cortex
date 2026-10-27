@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+﻿import { NavLink } from "react-router-dom";
 import { Home, LayoutDashboard, GitCompare, Library, AlertTriangle, Moon, Sun } from "lucide-react";
 import { useClimateZone } from "../theme/ClimateThemeProvider";
 
@@ -22,7 +22,7 @@ export default function NavBar() {
         alignItems: "center",
         gap: "var(--space-2)",
         padding: "var(--space-4) var(--space-8)",
-        background: "rgba(var(--surface-rgb), 0.72)",
+        background: "rgba(var(--surface-rgb), 0.94)",
         backdropFilter: "blur(16px) saturate(180%)",
         WebkitBackdropFilter: "blur(16px) saturate(180%)",
         borderBottom: "1px solid var(--border)",

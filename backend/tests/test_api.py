@@ -10,7 +10,9 @@ from unittest.mock import AsyncMock, patch
 from app.main import app
 from app.schemas.analysis_schema import (
     AnalysisInfo,
+    DailyForecastItem,
     FloodInfo,
+    HourlyForecastItem,
     LocationInfo,
     WeatherInfo,
 )
@@ -233,3 +235,97 @@ class TestHealth:
         resp = client.get("/health")
         assert resp.status_code == 200
         assert resp.json() == {"status": "ok"}
+
+
+# ---------------------------------------------------------------------------
+# Forecast fields
+# ---------------------------------------------------------------------------
+
+
+MOCK_WEATHER_WITH_FORECAST = WeatherInfo(
+    temperature=5.2,
+    humidity=62,
+    wind_speed=8.4,
+    rainfall=0.2,
+    cloud_cover=35,
+    daily_forecast=[
+        DailyForecastItem(
+            date="2026-10-25",
+            temp_max=8.0,
+            temp_min=1.5,
+            weather_code=3,
+            rain_probability=10,
+        ),
+        DailyForecastItem(
+            date="2026-10-26",
+            temp_max=7.0,
+            temp_min=0.5,
+            weather_code=71,
+            rain_probability=5,
+        ),
+    ],
+    hourly_forecast=[
+        HourlyForecastItem(time="2026-10-25T00:00", temperature=3.1),
+        HourlyForecastItem(time="2026-10-25T01:00", temperature=2.9),
+    ],
+)
+
+MOCK_WEATHER_NO_FORECAST = WeatherInfo(
+    temperature=5.2,
+    humidity=62,
+    wind_speed=8.4,
+    rainfall=0.2,
+    cloud_cover=35,
+    daily_forecast=None,
+    hourly_forecast=None,
+)
+
+
+class TestForecastInResponse:
+    def test_forecast_fields_present_when_available(self):
+        """daily_forecast and hourly_forecast appear in response when service returns them."""
+        pw, pf, pl = _patch_services(weather=MOCK_WEATHER_WITH_FORECAST)
+        with pw, pf, pl:
+            resp = client.post(
+                "/api/analyze", json={"latitude": 34.1526, "longitude": 77.5771}
+            )
+        assert resp.status_code == 200
+        weather = resp.json()["weather"]
+        assert "daily_forecast" in weather
+        assert isinstance(weather["daily_forecast"], list)
+        assert len(weather["daily_forecast"]) == 2
+        assert weather["daily_forecast"][0]["date"] == "2026-10-25"
+        assert weather["daily_forecast"][0]["temp_max"] == 8.0
+        assert weather["daily_forecast"][1]["weather_code"] == 71
+        assert "hourly_forecast" in weather
+        assert isinstance(weather["hourly_forecast"], list)
+        assert len(weather["hourly_forecast"]) == 2
+        assert weather["hourly_forecast"][0]["temperature"] == 3.1
+
+    def test_forecast_null_still_returns_200(self):
+        """Response is still 200 and analysis works even when forecast is None."""
+        pw, pf, pl = _patch_services(weather=MOCK_WEATHER_NO_FORECAST)
+        with pw, pf, pl:
+            resp = client.post(
+                "/api/analyze", json={"latitude": 34.1526, "longitude": 77.5771}
+            )
+        assert resp.status_code == 200
+        weather = resp.json()["weather"]
+        assert weather["daily_forecast"] is None
+        assert weather["hourly_forecast"] is None
+        # Core analysis still works
+        assert "classification" in resp.json()["analysis"]
+
+    def test_existing_weather_fields_unchanged(self):
+        """Existing weather fields still have the same values when forecast is added."""
+        pw, pf, pl = _patch_services(weather=MOCK_WEATHER_WITH_FORECAST)
+        with pw, pf, pl:
+            resp = client.post(
+                "/api/analyze", json={"latitude": 34.1526, "longitude": 77.5771}
+            )
+        weather = resp.json()["weather"]
+        assert weather["temperature"] == 5.2
+        assert weather["humidity"] == 62
+        assert weather["wind_speed"] == 8.4
+        assert weather["rainfall"] == 0.2
+        assert weather["cloud_cover"] == 35

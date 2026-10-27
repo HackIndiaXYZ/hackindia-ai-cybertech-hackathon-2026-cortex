@@ -1,0 +1,112 @@
+{
+  "source": "IMD (India Meteorological Department) Heat Wave & Cold Wave Criteria (simplified baseline to be calibrated)",
+  "verified": false,
+  "heat_stress": {
+    "source": "IMD Heat Wave Guidelines (Max temp >= 40°C in plains, severe heat wave >= 45°C or departure >= 4.5°C)",
+    "verified": false,
+    "levels": [
+      {
+        "level": "extreme",
+        "min_score": 75,
+        "max_score": 100,
+        "hottest_month_max_gte": 44.0,
+        "days_above_40_gte": 25.0,
+        "heat_index_humid_max_gte": 40.0,
+        "heat_index_humidity_gte": 50.0,
+        "score_base": 75.0,
+        "score_max_temp_factor": 3.0,
+        "score_days_factor": 0.5,
+        "source": "IMD Severe Heat Wave criterion (>= 45°C or >= 40°C with severe departure)",
+        "verified": false
+      },
+      {
+        "level": "high",
+        "min_score": 50,
+        "max_score": 74,
+        "hottest_month_max_gte": 39.0,
+        "days_above_40_gte": 8.0,
+        "heat_index_humid_max_gte": 36.0,
+        "heat_index_humidity_gte": 55.0,
+        "score_base": 50.0,
+        "score_max_temp_factor": 2.5,
+        "score_days_factor": 0.8,
+        "source": "IMD Heat Wave criterion (>= 40°C in plains or >= 36°C with high relative humidity)",
+        "verified": false
+      },
+      {
+        "level": "medium",
+        "min_score": 25,
+        "max_score": 49,
+        "hottest_month_max_gte": 34.0,
+        "days_above_40_gte": 1.0,
+        "score_base": 25.0,
+        "score_max_temp_factor": 2.0,
+        "score_days_factor": 1.5,
+        "source": "IMD Moderate Heat / Warm discomfort threshold",
+        "verified": false
+      },
+      {
+        "level": "low",
+        "min_score": 0,
+        "max_score": 24,
+        "score_base": 5.0,
+        "score_max_temp_factor": 1.0,
+        "score_days_factor": 0.0,
+        "source": "Comfortable / Mild summer climate baseline",
+        "verified": false
+      }
+    ]
+  },
+  "cold_stress": {
+    "source": "IMD Cold Wave Guidelines (Min temp <= 4°C in plains or departure <= -4.5°C; severe cold wave <= 2°C)",
+    "verified": false,
+    "levels": [
+      {
+        "level": "extreme",
+        "min_score": 75,
+        "max_score": 100,
+        "coldest_month_min_lte": -2.0,
+        "days_below_5_gte": 25.0,
+        "score_base": 75.0,
+        "score_min_temp_factor": 2.5,
+        "score_days_factor": 0.5,
+        "source": "IMD Severe Cold Wave criterion (Sub-zero or prolonged days <= 5°C)",
+        "verified": false
+      },
+      {
+        "level": "high",
+        "min_score": 50,
+        "max_score": 74,
+        "coldest_month_min_lte": 3.0,
+        "days_below_5_gte": 8.0,
+        "score_base": 50.0,
+        "score_min_temp_factor": 2.0,
+        "score_days_factor": 0.8,
+        "source": "IMD Cold Wave criterion (Min temp <= 4°C in plains)",
+        "verified": false
+      },
+      {
+        "level": "medium",
+        "min_score": 25,
+        "max_score": 49,
+        "coldest_month_min_lte": 8.0,
+        "days_below_5_gte": 1.0,
+        "score_base": 25.0,
+        "score_min_temp_factor": 1.5,
+        "score_days_factor": 1.2,
+        "source": "Chilly winter conditions threshold",
+        "verified": false
+      },
+      {
+        "level": "low",
+        "min_score": 0,
+        "max_score": 24,
+        "score_base": 5.0,
+        "score_min_temp_factor": 0.5,
+        "score_days_factor": 0.0,
+        "source": "Mild / Negligible winter cold stress baseline",
+        "verified": false
+      }
+    ]
+  }
+}

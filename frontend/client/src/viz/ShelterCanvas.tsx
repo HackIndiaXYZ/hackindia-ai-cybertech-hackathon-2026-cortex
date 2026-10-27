@@ -7,6 +7,8 @@ import {
   CLIMATE_SHELTER_CONFIGS,
   ClimateFeatureAnnotation,
 } from "./climateShelterData";
+import type { PlanSpec } from "../mock/planData";
+import type { DesignSpecResponse } from "../services/analyzeService";
 
 export interface ShelterCanvasProps {
   climateZone?: ActiveClimateArchetype;
@@ -15,6 +17,7 @@ export interface ShelterCanvasProps {
   viewMode?: "exterior" | "cutaway";
   zoneColor?: string;
   onSelectFeature?: (feature: ClimateFeatureAnnotation | null) => void;
+  spec?: PlanSpec | DesignSpecResponse;
 }
 
 // -------------------------------------------------------------
@@ -178,11 +181,13 @@ function ClimateShelterModel({
   viewMode,
   selectedFeature,
   onSelectFeature,
+  spec,
 }: {
   zone: ActiveClimateArchetype;
   viewMode: "exterior" | "cutaway";
   selectedFeature: string | null;
   onSelectFeature: (f: ClimateFeatureAnnotation | null) => void;
+  spec?: PlanSpec | DesignSpecResponse;
 }) {
   const config = CLIMATE_SHELTER_CONFIGS[zone] || CLIMATE_SHELTER_CONFIGS.TEMPERATE;
   const isCutaway = viewMode === "cutaway";
@@ -195,8 +200,11 @@ function ClimateShelterModel({
   const ceilingY = floorY + wallHeight;
   const roofY = isCutaway ? ceilingY + 3.2 : ceilingY; // Lifts up in cutaway view
 
-  const buildingW = 9.0;
-  const buildingL = 7.0;
+  // Dynamic footprint derived from spec if provided
+  const rawW = spec?.plotSize?.w ?? 14.0;
+  const rawL = spec?.plotSize?.l ?? 16.0;
+  const buildingW = Math.max(7.5, Math.min(10.5, rawW * 0.62));
+  const buildingL = Math.max(6.0, Math.min(9.0, rawL * 0.48));
 
   return (
     <group position={[0, 0, 0]}>
@@ -746,6 +754,7 @@ export default function ShelterCanvas({
   month,
   viewMode = "exterior",
   onSelectFeature,
+  spec,
 }: ShelterCanvasProps) {
   const [activeFeature, setActiveFeature] = useState<string | null>(null);
 
@@ -780,6 +789,7 @@ export default function ShelterCanvas({
         viewMode={viewMode}
         selectedFeature={activeFeature}
         onSelectFeature={handleSelect}
+        spec={spec}
       />
 
       <ContactShadows

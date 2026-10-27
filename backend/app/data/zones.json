@@ -1,0 +1,202 @@
+{
+  "HOT_DRY": {
+    "name": "Hot-Dry",
+    "description": "Characterized by high summer ambient temperatures, intense solar radiation, low relative humidity, and large diurnal temperature swings.",
+    "source": "NBC 2016 Part 11 & ECBC 2017 Guidelines for Hot-Dry Climates",
+    "verified": false,
+    "strategies": {
+      "layout": {
+        "value": "Compact courtyard house with clustered rooms and shared party walls.",
+        "reason": "Minimizes exposed surface-to-volume ratio to outside heat while the central courtyard induces microclimate shade and convective cool sinks."
+      },
+      "walls": {
+        "value": "Thick, high thermal mass walls (adobe, rammed earth, or stone masonry).",
+        "reason": "Slows diurnal heat penetration with a 6-8 hour thermal lag, keeping interiors cool by day and releasing warmth during chilly desert nights."
+      },
+      "roof": {
+        "value": "Insulated flat or terraced roof coated with high-albedo reflective white lime wash.",
+        "reason": "Bounces intense direct solar radiation away during midday while heavy insulation prevents conductive heat flow into living spaces."
+      },
+      "windows": {
+        "value": "Small, deep-set punched openings oriented primarily toward the north.",
+        "reason": "Cuts direct glare and unwanted solar radiation entry while still admitting uniform indirect natural daylight."
+      },
+      "shading": {
+        "value": "Deep external overhangs, movable louvers, and perforated jali screens.",
+        "reason": "Intercepts solar heat gain before it strikes glass panes and accelerates air movement through narrow vent apertures."
+      },
+      "ventilation": {
+        "value": "Night-flush ventilation with tight daytime envelope closure.",
+        "reason": "Locks out scorching daytime breezes and captures cool nocturnal air currents to purge structural heat mass."
+      },
+      "orientation": {
+        "value": "Long axis oriented along the East-West direction.",
+        "reason": "Exposes smaller end facades to intense low-angle morning and evening sun, maximizing easily shaded north and south walls."
+      },
+      "landscape": {
+        "value": "Drought-tolerant native vegetation, xeriscaping, and central water fountain or pool.",
+        "reason": "Supplies localized evaporative cooling around courtyards without excessive water depletion in arid terrain."
+      }
+    }
+  },
+  "WARM_HUMID": {
+    "name": "Warm-Humid",
+    "description": "Characterized by high humidity, moderate to high temperatures, heavy seasonal rainfall, and low diurnal variation.",
+    "source": "NBC 2016 Part 11 & ECBC 2017 Guidelines for Warm-Humid Climates",
+    "verified": false,
+    "strategies": {
+      "layout": {
+        "value": "Open, elongated single-banked pavilion layout with wide verandahs and stilts.",
+        "reason": "Maximizes cross-ventilation through every room while raised floors allow ground-level air circulation and elevate living spaces above moisture."
+      },
+      "walls": {
+        "value": "Lightweight, breathable walls with timber, bamboo, or permeable louvers.",
+        "reason": "Retains minimal heat so the structure cools rapidly as soon as ambient evening breezes pick up."
+      },
+      "roof": {
+        "value": "Steeply sloping roof with generous wide overhangs and ventilated ridges.",
+        "reason": "Rapidly sheds torrential monsoon rains while extensive overhangs shield perimeter walls from wind-driven downpours."
+      },
+      "windows": {
+        "value": "Large shaded window openings positioned for cross-ventilation.",
+        "reason": "Promotes physiological cooling by maintaining continuous indoor air speed across occupants' skin."
+      },
+      "shading": {
+        "value": "Continuous perimeter verandahs, fixed chhajjas, and timber lattice brise-soleil.",
+        "reason": "Prevents direct solar exposure on wall surfaces while allowing unrestricted airflow during humid rain showers."
+      },
+      "ventilation": {
+        "value": "Continuous cross-ventilation and stack ventilation via high roof clerestories.",
+        "reason": "Dissipates trapped humid air and heat buildup through high ceiling vents."
+      },
+      "orientation": {
+        "value": "Long facades facing North and South, aligned perpendicular to prevailing wind vectors.",
+        "reason": "Minimizes solar radiation on side walls while catching prevailing coastal or monsoonal breezes."
+      },
+      "landscape": {
+        "value": "High-canopy shade trees with cleared understory and permeable grass turf.",
+        "reason": "Creates an overhead shade umbrella without blocking near-ground horizontal air circulation."
+      }
+    }
+  },
+  "COMPOSITE": {
+    "name": "Composite",
+    "description": "Exhibits contrasting seasonal extremes: scorching dry summers, intense monsoons, and cold winter months.",
+    "source": "NBC 2016 Part 11 & ECBC 2017 Guidelines for Composite Climates",
+    "verified": false,
+    "strategies": {
+      "layout": {
+        "value": "Courtyard or semi-courtyard configuration with zoned seasonal living quarters.",
+        "reason": "Provides sheltered outdoor living in winter and microclimatic shade cooling throughout harsh summer months."
+      },
+      "walls": {
+        "value": "Medium to high thermal mass walls (cavity brickwork or insulated fly-ash blocks).",
+        "reason": "Dampens severe summer daytime heat peaks while retaining indoor warmth during cold winter nights."
+      },
+      "roof": {
+        "value": "Insulated concrete or vaulted roof with weatherproofing and reflective ceramic tile finish.",
+        "reason": "Shields against intense summer sun while heavy insulation prevents winter heat loss through the ceiling."
+      },
+      "windows": {
+        "value": "Moderate window-to-wall ratio with operable double-glazed casements.",
+        "reason": "Can be opened fully for cross-ventilation during humid monsoons and sealed tightly against dust and winter chills."
+      },
+      "shading": {
+        "value": "South overhangs sized for summer shade and winter solar ingress, with adjustable louvers.",
+        "reason": "Blocks high-altitude summer sun while welcoming low-altitude winter sunbeams deep into interior living rooms."
+      },
+      "ventilation": {
+        "value": "Seasonal ventilation: nighttime cooling in summer, cross-drafts during monsoon, controlled air exchanges in winter.",
+        "reason": "Adapts flexibly across changing seasonal temperature and humidity regimes."
+      },
+      "orientation": {
+        "value": "Longer building axis aligned East-West with primary fenestration facing South.",
+        "reason": "Optimizes passive solar heating in winter while enabling easy overhang shading in summer."
+      },
+      "landscape": {
+        "value": "Deciduous shade trees to the South/West and seasonal water catchments.",
+        "reason": "Provides full foliage shade in summer and naturally drops leaves in winter to admit beneficial solar warming."
+      }
+    }
+  },
+  "TEMPERATE": {
+    "name": "Temperate",
+    "description": "Moderate ambient temperatures year-round with comfortable humidity and balanced seasonal variations.",
+    "source": "NBC 2016 Part 11 & ECBC 2017 Guidelines for Temperate Climates",
+    "verified": false,
+    "strategies": {
+      "layout": {
+        "value": "Simple compact plan with integrated semi-open balconies and verandahs.",
+        "reason": "Promotes indoor-outdoor living while maintaining a moderate surface area for stable year-round comfort."
+      },
+      "walls": {
+        "value": "Medium thermal mass walls (standard brickwork or compressed earth blocks).",
+        "reason": "Smooths out moderate day-to-night temperature swings without excessive insulation bulk."
+      },
+      "roof": {
+        "value": "Gabled or vaulted roof with moderate slopes and rainwater harvesting gutters.",
+        "reason": "Handles seasonal rain effectively and facilitates natural ventilation air pockets under the ceiling."
+      },
+      "windows": {
+        "value": "20-30 percent window-to-wall area with operable double or high-performance glazing.",
+        "reason": "Provides ample natural daylighting and views without causing excessive heat gain or thermal leakage."
+      },
+      "shading": {
+        "value": "Moderate overhangs and deciduous pergola trellises.",
+        "reason": "Shields direct solar glare during peak afternoon hours while allowing gentle ambient diffuse light."
+      },
+      "ventilation": {
+        "value": "Cross-ventilation through opposing windows and operable ceiling vents.",
+        "reason": "Maintains continuous fresh air circulation in response to mild ambient outdoor temperatures."
+      },
+      "orientation": {
+        "value": "Primary facades oriented toward North and South/Southeast.",
+        "reason": "Balances natural daylighting year-round while taking advantage of prevailing gentle local breezes."
+      },
+      "landscape": {
+        "value": "Evergreen and flowering perimeter shrubs, rain gardens, and permeable paving.",
+        "reason": "Enhances microclimate comfort, supports local biodiversity, and absorbs seasonal storm runoff."
+      }
+    }
+  },
+  "COLD": {
+    "name": "Cold",
+    "description": "Characterized by sub-zero winter temperatures, snowfall or frost, high heating loads, and strong chilly winds.",
+    "source": "NBC 2016 Part 11 & ECBC 2017 Guidelines for Cold Climates",
+    "verified": false,
+    "strategies": {
+      "layout": {
+        "value": "Compact, low-profile footprint with minimal perimeter envelope surface.",
+        "reason": "Minimizes conductive surface area exposed to freezing external temperatures and reduces total heating demand."
+      },
+      "walls": {
+        "value": "Thick, heavily insulated perimeter walls (stone/rammed earth with wood or wool insulation).",
+        "reason": "Prevents conductive heat loss to the freezing exterior and retains internally generated living heat."
+      },
+      "roof": {
+        "value": "Insulated sloped roof with snow-shedding pitch and airtight ceiling insulation.",
+        "reason": "Facilitates snow shedding to prevent excessive structural snow load while blocking heat loss through the roof peak."
+      },
+      "windows": {
+        "value": "Large double or triple-glazed south windows with insulated shutters; minimal north windows.",
+        "reason": "Maximizes direct passive solar heat gain from the low southern sun while eliminating cold drafts from the north."
+      },
+      "shading": {
+        "value": "Minimal permanent solar shading; retractable insulated night blinds and storm shutters.",
+        "reason": "Welcomes every bit of solar heat during the daytime and seals windows at night to cut radiation losses."
+      },
+      "ventilation": {
+        "value": "Draught-proofing with airlocks (vestibules) and controlled heat-recovery ventilation.",
+        "reason": "Eliminates freezing cold wind infiltration while supplying essential fresh air without losing interior warmth."
+      },
+      "orientation": {
+        "value": "Major glazed living facades facing true South, with service buffers to the North.",
+        "reason": "Maximizes passive solar radiation capture during short winter days while northern storage rooms act as thermal buffers."
+      },
+      "landscape": {
+        "value": "Dense evergreen windbreak trees planted on the North and Northwest boundaries.",
+        "reason": "Deflects icy winter gales over and away from the building envelope, creating a sheltered microclimate."
+      }
+    }
+  }
+}

@@ -1,0 +1,287 @@
+{
+  "source": "NBC 2016 Part 11, ECBC 2017 & BMTPC Guidelines (placeholder values to be verified)",
+  "verified": false,
+  "placeholder_note": "All scores are preliminary domain heuristics (scale 0-10) to be empirically calibrated against field measurements and structural codes.",
+  "walls": [
+    {
+      "id": "brick",
+      "name": "Burnt Clay Brick Masonry",
+      "comfort_by_zone": {
+        "HOT_DRY": 6.5,
+        "WARM_HUMID": 6.0,
+        "COMPOSITE": 6.5,
+        "TEMPERATE": 7.0,
+        "COLD": 6.0
+      },
+      "cost": 5.5,
+      "safety": 7.5,
+      "sustainability": 5.0,
+      "source": "BMTPC Schedule of Rates & NBC 2016 (placeholder)",
+      "verified": false
+    },
+    {
+      "id": "adobe_rammed_earth",
+      "name": "Stabilized Rammed Earth / Adobe",
+      "comfort_by_zone": {
+        "HOT_DRY": 9.5,
+        "WARM_HUMID": 4.5,
+        "COMPOSITE": 8.0,
+        "TEMPERATE": 7.5,
+        "COLD": 6.5
+      },
+      "cost": 3.0,
+      "safety": 6.5,
+      "sustainability": 9.5,
+      "source": "Auroville Earth Institute & Laurie Baker Centre (placeholder)",
+      "verified": false
+    },
+    {
+      "id": "hollow_block",
+      "name": "Hollow Concrete Block Masonry",
+      "comfort_by_zone": {
+        "HOT_DRY": 6.0,
+        "WARM_HUMID": 6.5,
+        "COMPOSITE": 6.0,
+        "TEMPERATE": 6.5,
+        "COLD": 5.5
+      },
+      "cost": 4.0,
+      "safety": 7.0,
+      "sustainability": 6.5,
+      "source": "IS 2185 Part 1 (placeholder)",
+      "verified": false
+    },
+    {
+      "id": "aac_block",
+      "name": "Autoclaved Aerated Concrete (AAC)",
+      "comfort_by_zone": {
+        "HOT_DRY": 8.5,
+        "WARM_HUMID": 7.0,
+        "COMPOSITE": 8.0,
+        "TEMPERATE": 8.0,
+        "COLD": 8.0
+      },
+      "cost": 6.5,
+      "safety": 7.5,
+      "sustainability": 7.0,
+      "source": "IS 2185 Part 3 & ECBC 2017 (placeholder)",
+      "verified": false
+    },
+    {
+      "id": "stone",
+      "name": "Dressed Stone Masonry",
+      "comfort_by_zone": {
+        "HOT_DRY": 8.5,
+        "WARM_HUMID": 4.0,
+        "COMPOSITE": 7.5,
+        "TEMPERATE": 7.0,
+        "COLD": 7.5
+      },
+      "cost": 7.5,
+      "safety": 8.5,
+      "sustainability": 8.0,
+      "source": "NBC 2016 Part 6 & Traditional Vernacular (placeholder)",
+      "verified": false
+    }
+  ],
+  "roof": [
+    {
+      "id": "rcc_flat",
+      "name": "Standard RCC Flat Slab",
+      "comfort_by_zone": {
+        "HOT_DRY": 5.0,
+        "WARM_HUMID": 5.0,
+        "COMPOSITE": 5.0,
+        "TEMPERATE": 6.5,
+        "COLD": 5.0
+      },
+      "cost": 6.5,
+      "safety": 9.0,
+      "sustainability": 4.5,
+      "source": "IS 456 Plain and Reinforced Concrete (placeholder)",
+      "verified": false
+    },
+    {
+      "id": "insulated_rcc",
+      "name": "Insulated High-Albedo RCC Slab",
+      "comfort_by_zone": {
+        "HOT_DRY": 8.5,
+        "WARM_HUMID": 7.5,
+        "COMPOSITE": 8.5,
+        "TEMPERATE": 8.0,
+        "COLD": 8.5
+      },
+      "cost": 8.0,
+      "safety": 9.0,
+      "sustainability": 6.0,
+      "source": "ECBC 2017 Cool Roof Guidelines (placeholder)",
+      "verified": false
+    },
+    {
+      "id": "sloped_tile",
+      "name": "Sloped Mangalore Clay Tile Roof",
+      "comfort_by_zone": {
+        "HOT_DRY": 7.0,
+        "WARM_HUMID": 9.0,
+        "COMPOSITE": 7.5,
+        "TEMPERATE": 8.5,
+        "COLD": 7.5
+      },
+      "cost": 5.0,
+      "safety": 7.0,
+      "sustainability": 8.5,
+      "source": "IS 654 Clay Roofing Tiles & Vernacular Studies (placeholder)",
+      "verified": false
+    },
+    {
+      "id": "thatch_light_sheet",
+      "name": "Insulated Light Corrugated Sheet / Thatch",
+      "comfort_by_zone": {
+        "HOT_DRY": 5.5,
+        "WARM_HUMID": 8.0,
+        "COMPOSITE": 5.5,
+        "TEMPERATE": 6.5,
+        "COLD": 4.5
+      },
+      "cost": 2.5,
+      "safety": 5.5,
+      "sustainability": 7.5,
+      "source": "BMTPC Disaster Resistant Construction (placeholder)",
+      "verified": false
+    }
+  ],
+  "windows": [
+    {
+      "id": "small",
+      "name": "Small Deep-Set Punched Openings",
+      "comfort_by_zone": {
+        "HOT_DRY": 9.0,
+        "WARM_HUMID": 4.0,
+        "COMPOSITE": 7.0,
+        "TEMPERATE": 6.0,
+        "COLD": 8.5
+      },
+      "cost": 3.0,
+      "safety": 8.5,
+      "sustainability": 8.0,
+      "source": "NBC 2016 Fenestration Sizing (placeholder)",
+      "verified": false
+    },
+    {
+      "id": "medium",
+      "name": "Medium Shaded Casement Windows",
+      "comfort_by_zone": {
+        "HOT_DRY": 7.0,
+        "WARM_HUMID": 7.5,
+        "COMPOSITE": 7.5,
+        "TEMPERATE": 8.0,
+        "COLD": 7.0
+      },
+      "cost": 5.0,
+      "safety": 7.5,
+      "sustainability": 7.0,
+      "source": "ECBC 2017 Window-to-Wall Ratio Baseline (placeholder)",
+      "verified": false
+    },
+    {
+      "id": "large",
+      "name": "Large Full-Height Louvered Glazing",
+      "comfort_by_zone": {
+        "HOT_DRY": 4.0,
+        "WARM_HUMID": 9.0,
+        "COMPOSITE": 5.5,
+        "TEMPERATE": 7.5,
+        "COLD": 4.5
+      },
+      "cost": 7.5,
+      "safety": 6.0,
+      "sustainability": 6.0,
+      "source": "NBC 2016 Natural Ventilation Guidelines (placeholder)",
+      "verified": false
+    },
+    {
+      "id": "double_glazed",
+      "name": "High-Performance Double Glazed Low-E",
+      "comfort_by_zone": {
+        "HOT_DRY": 8.5,
+        "WARM_HUMID": 7.0,
+        "COMPOSITE": 8.5,
+        "TEMPERATE": 8.5,
+        "COLD": 9.5
+      },
+      "cost": 8.5,
+      "safety": 8.0,
+      "sustainability": 6.5,
+      "source": "ECBC 2017 Fenestration Prescriptions (placeholder)",
+      "verified": false
+    }
+  ],
+  "orientations": [
+    {
+      "id": "east_west",
+      "name": "East-West Axis (North/South Facing)",
+      "comfort_by_zone": {
+        "HOT_DRY": 9.0,
+        "WARM_HUMID": 8.5,
+        "COMPOSITE": 9.0,
+        "TEMPERATE": 8.5,
+        "COLD": 8.0
+      },
+      "cost": 1.0,
+      "safety": 7.0,
+      "sustainability": 9.0,
+      "source": "Passive Solar Architecture Handbook (placeholder)",
+      "verified": false
+    },
+    {
+      "id": "north_south",
+      "name": "North-South Axis (East/West Facing)",
+      "comfort_by_zone": {
+        "HOT_DRY": 5.5,
+        "WARM_HUMID": 6.0,
+        "COMPOSITE": 6.0,
+        "TEMPERATE": 6.5,
+        "COLD": 6.0
+      },
+      "cost": 1.0,
+      "safety": 7.0,
+      "sustainability": 7.0,
+      "source": "Passive Solar Architecture Handbook (placeholder)",
+      "verified": false
+    }
+  ],
+  "ventilations": [
+    {
+      "id": "cross_ventilation",
+      "name": "Cross Ventilation with Shaded Louvers",
+      "comfort_by_zone": {
+        "HOT_DRY": 6.0,
+        "WARM_HUMID": 9.5,
+        "COMPOSITE": 7.5,
+        "TEMPERATE": 8.0,
+        "COLD": 4.5
+      },
+      "cost": 2.0,
+      "safety": 7.0,
+      "sustainability": 9.0,
+      "source": "NBC 2016 Ventilation Rate Guidelines (placeholder)",
+      "verified": false
+    },
+    {
+      "id": "courtyard_stack",
+      "name": "Central Courtyard Convective Stack",
+      "comfort_by_zone": {
+        "HOT_DRY": 9.5,
+        "WARM_HUMID": 7.5,
+        "COMPOSITE": 8.5,
+        "TEMPERATE": 8.0,
+        "COLD": 7.0
+      },
+      "cost": 4.0,
+      "safety": 7.5,
+      "sustainability": 9.0,
+      "source": "Traditional Indian Courtyard Microclimate Studies (placeholder)",
+      "verified": false
+    }
+  ]
+}

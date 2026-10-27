@@ -472,12 +472,15 @@ export default function LocationPicker() {
         <div
           style={{
             display: "flex", alignItems: "center", gap: "var(--space-3)",
-            background: "#fff",
+            background: "rgba(var(--surface-rgb), 0.95)",
+            backdropFilter: "blur(16px)",
+            WebkitBackdropFilter: "blur(16px)",
             borderRadius: "var(--radius-xl)",
             padding: "var(--space-3) var(--space-4)",
-            border: "1.5px solid rgba(0,0,0,0.1)",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+            border: "1.5px solid var(--border)",
+            boxShadow: "0 4px 16px rgba(var(--shadow-color), 0.12)",
             zIndex: 1000, position: "relative",
+            color: "var(--text)",
           }}
         >
           {isLocating || isSearching ? (
@@ -501,6 +504,7 @@ export default function LocationPicker() {
               background: "transparent",
               fontSize: "var(--text-base)",
               fontFamily: "var(--font-body)",
+              color: "var(--text)",
             }}
           />
 
@@ -529,11 +533,15 @@ export default function LocationPicker() {
               style={{
                 position: "absolute", top: "100%", left: 0, right: 0,
                 marginTop: "var(--space-2)",
-                background: "#fff", borderRadius: "var(--radius-lg)",
-                boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+                background: "rgba(var(--surface-rgb), 0.98)",
+                backdropFilter: "blur(20px)",
+                WebkitBackdropFilter: "blur(20px)",
+                borderRadius: "var(--radius-lg)",
+                boxShadow: "0 10px 25px rgba(var(--shadow-color), 0.2)",
                 listStyle: "none", padding: "var(--space-2) 0", margin: 0,
-                zIndex: 1001, border: "1px solid rgba(0,0,0,0.05)",
+                zIndex: 1001, border: "1px solid var(--border)",
                 maxHeight: 280, overflowY: "auto",
+                color: "var(--text)",
               }}
             >
               {searchResults.map((r, i) => {
@@ -547,14 +555,16 @@ export default function LocationPicker() {
                     style={{
                       padding: "var(--space-3) var(--space-4)", cursor: "pointer",
                       display: "flex", alignItems: "center", gap: "var(--space-3)",
-                      borderBottom: i < searchResults.length - 1 ? "1px solid rgba(0,0,0,0.05)" : "none",
+                      borderBottom: i < searchResults.length - 1 ? "1px solid var(--border)" : "none",
+                      color: "var(--text)",
+                      transition: "background 0.15s ease",
                     }}
-                    onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(0,0,0,0.02)")}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(var(--shadow-color), 0.08)")}
                     onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                   >
-                    <MapPin size={16} color="#C8553D" />
+                    <MapPin size={16} color="var(--primary)" />
                     <div>
-                      <div style={{ fontSize: "var(--text-sm)", fontWeight: 500 }}>{shortName}</div>
+                      <div style={{ fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--text)" }}>{shortName}</div>
                       {sub && (
                         <div style={{ fontSize: "var(--text-xs)", color: "var(--muted)" }}>{sub}</div>
                       )}
@@ -628,16 +638,18 @@ export default function LocationPicker() {
             style={{
               position: "absolute", bottom: 16, left: "50%",
               transform: "translateX(-50%)",
-              background: "rgba(255,255,255,0.92)",
-              backdropFilter: "blur(6px)",
-              padding: "4px 14px", borderRadius: 20,
-              fontSize: 12, fontWeight: 500, color: "#555",
+              background: "rgba(var(--surface-rgb), 0.94)",
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
+              padding: "6px 16px", borderRadius: "var(--radius-full)",
+              fontSize: 12, fontWeight: 600, color: "var(--text)",
               display: "flex", alignItems: "center", gap: 6,
-              boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+              boxShadow: "0 4px 12px rgba(var(--shadow-color), 0.15)",
+              border: "1px solid var(--border)",
               zIndex: 1000, pointerEvents: "none",
             }}
           >
-            <MapPin size={13} /> Click anywhere on the map to drop a pin
+            <MapPin size={13} style={{ color: "var(--primary)" }} /> Click anywhere on the map to drop a pin
           </div>
         )}
       </div>
@@ -651,11 +663,14 @@ export default function LocationPicker() {
             animate="visible"
             exit="exit"
             style={{
-              background: "#fff",
+              background: "rgba(var(--surface-rgb), 0.96)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
               borderRadius: "var(--radius-xl)",
-              border: "1.5px solid rgba(0,0,0,0.08)",
-              boxShadow: "0 8px 24px rgba(0,0,0,0.07)",
+              border: "1.5px solid var(--border)",
+              boxShadow: "0 12px 32px rgba(var(--shadow-color), 0.2)",
               overflow: "hidden",
+              color: "var(--text)",
             }}
           >
             {/* Loading state */}
@@ -670,9 +685,9 @@ export default function LocationPicker() {
               >
                 <Loader2
                   size={32}
-                  style={{ color: "#C8553D", animation: "spin 1s linear infinite" }}
+                  style={{ color: "var(--primary)", animation: "spin 1s linear infinite" }}
                 />
-                <span style={{ fontWeight: 600, color: "#C8553D", fontSize: "var(--text-sm)" }}>
+                <span style={{ fontWeight: 600, color: "var(--primary)", fontSize: "var(--text-sm)" }}>
                   Analysing environment…
                 </span>
                 <span style={{ fontSize: "var(--text-xs)", color: "var(--muted)" }}>
@@ -724,9 +739,9 @@ export default function LocationPicker() {
                   }}
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
-                    <MapPin size={18} style={{ color: "#C8553D", flexShrink: 0 }} />
+                    <MapPin size={18} style={{ color: "var(--primary)", flexShrink: 0 }} />
                     <div>
-                      <div style={{ fontWeight: 700, fontSize: "var(--text-base)" }}>
+                      <div style={{ fontWeight: 700, fontSize: "var(--text-base)", color: "var(--text)" }}>
                         {analysis.location.name ?? "Unknown Location"}
                       </div>
                       {analysis.location.country && (
@@ -740,10 +755,10 @@ export default function LocationPicker() {
                   {/* Classification badge */}
                   <span
                     style={{
-                      background: "#C8553D", color: "#fff",
-                      padding: "3px 12px", borderRadius: 20,
+                      background: "var(--primary)", color: "#fff",
+                      padding: "4px 14px", borderRadius: 20,
                       fontSize: 12, fontWeight: 700,
-                      boxShadow: "0 2px 8px rgba(200,85,61,0.3)",
+                      boxShadow: "0 2px 8px rgba(var(--shadow-color), 0.3)",
                     }}
                   >
                     {analysis.analysis.classification}
@@ -761,14 +776,14 @@ export default function LocationPicker() {
                 >
                   {[
                     {
-                      icon: <Thermometer size={16} style={{ color: "#C8553D" }} />,
+                      icon: <Thermometer size={16} style={{ color: "var(--primary)" }} />,
                       label: "Temperature",
                       value: analysis.weather.temperature != null
                         ? `${analysis.weather.temperature}°C`
                         : "N/A",
                     },
                     {
-                      icon: <Droplets size={16} style={{ color: "#3B82F6" }} />,
+                      icon: <Droplets size={16} style={{ color: "var(--accent)" }} />,
                       label: "Humidity",
                       value: analysis.weather.humidity != null
                         ? `${analysis.weather.humidity}%`
@@ -784,11 +799,12 @@ export default function LocationPicker() {
                     <div
                       key={stat.label}
                       style={{
-                        background: "rgba(0,0,0,0.025)",
+                        background: "rgba(var(--shadow-color), 0.06)",
                         borderRadius: "var(--radius-lg)",
                         padding: "var(--space-3)",
                         display: "flex", flexDirection: "column",
                         gap: 4,
+                        border: "1px solid var(--border)",
                       }}
                     >
                       <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
@@ -817,14 +833,14 @@ export default function LocationPicker() {
                     width: "100%",
                     display: "flex", alignItems: "center", justifyContent: "center",
                     gap: "var(--space-2)",
-                    background: isLoading ? "rgba(200,85,61,0.4)" : "#C8553D",
+                    background: isLoading ? "rgba(var(--shadow-color), 0.4)" : "var(--primary)",
                     color: "#fff", border: "none",
                     borderRadius: "var(--radius-lg)",
                     padding: "var(--space-3) var(--space-4)",
                     fontSize: "var(--text-sm)", fontWeight: 700,
                     cursor: isLoading ? "not-allowed" : "pointer",
                     transition: "background 0.2s, transform 0.15s",
-                    boxShadow: isLoading ? "none" : "0 4px 12px rgba(200,85,61,0.3)",
+                    boxShadow: isLoading ? "none" : "0 4px 12px rgba(var(--shadow-color), 0.3)",
                   }}
                   onMouseEnter={(e) => {
                     if (!isLoading) e.currentTarget.style.transform = "translateY(-1px)";

@@ -1,0 +1,15 @@
+{
+  "source": "NBC 2016 Part 6 & Part 11 MCDM Design Ranking Heuristics",
+  "verified": false,
+  "placeholder_note": "Safety minimum threshold and component weights are placeholders to be calibrated against structural design standards.",
+  "min_safety_score": 6.0,
+  "default_top_n": 3,
+  "max_top_n": 10,
+  "component_weights": {
+    "wall": 0.35,
+    "roof": 0.35,
+    "window": 0.15,
+    "orientation": 0.075,
+    "ventilation": 0.075
+  }
+}

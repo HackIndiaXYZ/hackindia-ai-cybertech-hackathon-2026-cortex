@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { pageVariants } from "../motion/variants";
@@ -19,6 +19,9 @@ import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useLocationContext } from "../context/LocationContext";
+import { useClimateZone } from "../theme/ClimateThemeProvider";
+import { mapBackendClassificationToZone } from "../utils/climateMapping";
+import type { ZoneOrNeutral } from "../types";
 
 const miniPinIcon = L.divIcon({
   className: "mini-map-marker",
@@ -40,6 +43,7 @@ import RequirementsTab from "../components/dashboard/RequirementsTab";
 import DesignsTab from "../components/dashboard/DesignsTab";
 import PlanTab from "../components/dashboard/PlanTab";
 import ShelterTab from "../components/dashboard/ShelterTab";
+import RecommendedDesignsSection from "../components/dashboard/RecommendedDesignsSection";
 
 const TABS = [
   { id: "weather", label: "Weather", icon: CloudSun },
@@ -55,7 +59,19 @@ export default function DashboardPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(TABS[0].id);
   const { location, analysis, isLoading, analysisError } = useLocationContext();
+  const { setZone } = useClimateZone();
   const reduce = useReducedMotion();
+
+  // Automatically sync theme zone when backend classification is received
+  useEffect(() => {
+    if (analysis?.analysis?.classification) {
+      const mapped = mapBackendClassificationToZone(analysis.analysis.classification);
+      if (mapped) {
+        const key = mapped.toUpperCase().replace(/[- ]/g, "_") as ZoneOrNeutral;
+        setZone(key);
+      }
+    }
+  }, [analysis, setZone]);
 
   const coords: [number, number] | null = location
     ? [location.lat, location.lon]
@@ -79,7 +95,9 @@ export default function DashboardPage() {
             display: "inline-flex",
             alignItems: "center",
             gap: "var(--space-2)",
-            background: "#fff",
+            background: "rgba(var(--surface-rgb), 0.95)",
+            backdropFilter: "blur(12px)",
+            WebkitBackdropFilter: "blur(12px)",
             border: "1.5px solid var(--border)",
             padding: "var(--space-2) var(--space-4)",
             borderRadius: "var(--radius-lg)",
@@ -87,7 +105,7 @@ export default function DashboardPage() {
             fontWeight: 600,
             color: "var(--text)",
             cursor: "pointer",
-            boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
+            boxShadow: "0 1px 4px rgba(var(--shadow-color), 0.08)",
             transition: "all 0.15s ease",
           }}
           onMouseEnter={(e) => {
@@ -140,14 +158,16 @@ export default function DashboardPage() {
               position: "absolute",
               bottom: 10,
               left: 12,
-              background: "rgba(255,255,255,0.92)",
-              backdropFilter: "blur(6px)",
+              background: "rgba(var(--surface-rgb), 0.92)",
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
               padding: "4px 12px",
               borderRadius: "var(--radius-full)",
               fontSize: "12px",
               fontWeight: 600,
               color: "var(--text)",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+              border: "1px solid var(--border)",
+              boxShadow: "0 2px 8px rgba(var(--shadow-color), 0.15)",
               zIndex: 1000,
               display: "flex",
               alignItems: "center",
@@ -249,17 +269,30 @@ export default function DashboardPage() {
         )}
       </div>
 
+      {/* RECOMMENDED VERNACULAR DESIGNS SECTION */}
+      <RecommendedDesignsSection
+        analysis={analysis}
+        isLoading={isLoading}
+        analysisError={analysisError}
+      />
+
       {/* DESKTOP TAB BAR */}
       <div 
         className="desktop-tabs"
         style={{
           display: "flex",
-          borderBottom: "1px solid var(--border)",
+          background: "var(--surface)",
+          border: "1px solid var(--border)",
+          borderRadius: "var(--radius-xl)",
+          padding: "6px",
           marginBottom: "var(--space-8)",
           overflowX: "auto",
           WebkitOverflowScrolling: "touch",
           scrollbarWidth: "none", // Firefox
           msOverflowStyle: "none", // IE
+          boxShadow: "0 2px 10px rgba(0,0,0,0.04)",
+          position: "relative",
+          zIndex: 10,
         }}
       >
         <style>{`.desktop-tabs::-webkit-scrollbar { display: none; }`}</style>
@@ -272,9 +305,10 @@ export default function DashboardPage() {
               onClick={() => setActiveTab(tab.id)}
               style={{
                 position: "relative",
-                padding: "var(--space-4) var(--space-6)",
-                background: "transparent",
+                padding: "var(--space-3) var(--space-5)",
+                background: isActive ? "rgba(var(--primary-rgb), 0.12)" : "transparent",
                 border: "none",
+                borderRadius: "var(--radius-lg)",
                 cursor: "pointer",
                 color: isActive ? "var(--primary)" : "var(--muted)",
                 fontWeight: isActive ? 600 : 500,
@@ -282,7 +316,7 @@ export default function DashboardPage() {
                 alignItems: "center",
                 gap: "var(--space-2)",
                 whiteSpace: "nowrap",
-                transition: "color 0.2s"
+                transition: "all 0.18s ease"
               }}
             >
               <Icon size={18} />
@@ -293,14 +327,14 @@ export default function DashboardPage() {
                   layoutId="activeTabIndicator"
                   style={{
                     position: "absolute",
-                    bottom: -1,
-                    left: 0,
-                    right: 0,
-                    height: 3,
+                    bottom: 2,
+                    left: "20%",
+                    right: "20%",
+                    height: 2.5,
                     background: "var(--primary)",
-                    borderRadius: "3px 3px 0 0"
+                    borderRadius: "2px"
                   }}
-                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  transition={{ type: "spring", stiffness: 350, damping: 30 }}
                 />
               )}
             </button>

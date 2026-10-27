@@ -7,15 +7,15 @@
  *  - Max 60 particles per zone
  *  - Pauses when tab is hidden (visibilitychange API)
  *  - Completely disabled (static bg div) when prefers-reduced-motion
- *  - Lightweight canvas only — no heavy libraries
+ *  - Lightweight canvas only ï¿½ no heavy libraries
  *
  * Zone effects:
- *  HOT_DRY    — slow heat-shimmer waves + glowing pulsing sun
- *  WARM_HUMID — gentle falling rain streaks + floating mist circles
- *  COMPOSITE  — slow drifting warm gradient + faint dust particles
- *  TEMPERATE  — floating leaf shapes + soft drifting clouds
- *  COLD       — slow falling snowflakes with glowing halos
- *  NEUTRAL    — subtle slow-moving gradient (no particles)
+ *  HOT_DRY    ï¿½ slow heat-shimmer waves + glowing pulsing sun
+ *  WARM_HUMID ï¿½ gentle falling rain streaks + floating mist circles
+ *  COMPOSITE  ï¿½ slow drifting warm gradient + faint dust particles
+ *  TEMPERATE  ï¿½ floating leaf shapes + soft drifting clouds
+ *  COLD       ï¿½ slow falling snowflakes with glowing halos
+ *  NEUTRAL    ï¿½ subtle slow-moving gradient (no particles)
  * ------------------------------------------------------------------
  */
 import { useEffect, useRef, useCallback } from "react";
@@ -55,7 +55,7 @@ interface ZoneConfig {
   update: (p: Particle, w: number, h: number, t: number) => void;
   /** Paint the particle onto the canvas. */
   draw: (ctx: CanvasRenderingContext2D, p: Particle, t: number) => void;
-  /** Optional extra canvas effects drawn before particles (sun, clouds…). */
+  /** Optional extra canvas effects drawn before particles (sun, cloudsï¿½). */
   extra?: (ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => void;
 }
 
@@ -70,7 +70,7 @@ const rnd = (min: number, max: number) => min + Math.random() * (max - min);
 const CONFIGS: Record<ZoneOrNeutral, ZoneConfig> = {
 
   /* ----------------------------------------------------------------
-     NEUTRAL — soft neutral gradient, no particles
+     NEUTRAL ï¿½ soft neutral gradient, no particles
      ---------------------------------------------------------------- */
   NEUTRAL: {
     count: 0,
@@ -98,7 +98,7 @@ const CONFIGS: Record<ZoneOrNeutral, ZoneConfig> = {
   },
 
   /* ----------------------------------------------------------------
-     HOT_DRY — heat shimmer waves + glowing pulsing sun
+     HOT_DRY ï¿½ heat shimmer waves + glowing pulsing sun
      ---------------------------------------------------------------- */
   HOT_DRY: {
     count: 18,   // shimmer wave bands
@@ -139,7 +139,7 @@ const CONFIGS: Record<ZoneOrNeutral, ZoneConfig> = {
     draw: (ctx, p) => {
       ctx.save();
       ctx.globalAlpha = p.alpha * p.life;
-      // Horizontal shimmer band — ellipse with soft gradient
+      // Horizontal shimmer band ï¿½ ellipse with soft gradient
       const grd = ctx.createLinearGradient(p.x - 70, p.y, p.x + 70, p.y);
       grd.addColorStop(0,   "rgba(255, 210, 80, 0)");
       grd.addColorStop(0.3, "rgba(255, 210, 80, 0.5)");
@@ -153,13 +153,14 @@ const CONFIGS: Record<ZoneOrNeutral, ZoneConfig> = {
       ctx.restore();
     },
     extra: (ctx, w, _h, t) => {
-      const sx = w * 0.82;
-      const sy = 72;
-      const pulse = 1 + 0.06 * Math.sin(t * 0.9);
+      // Position sun high in the top-right sky corner away from page content & tab rows
+      const sx = Math.max(w - 120, w * 0.90);
+      const sy = Math.max(60, Math.min(85, _h * 0.08));
+      const pulse = 1 + 0.05 * Math.sin(t * 0.9);
 
       // Layered outer glow halos
-      for (let i = 5; i >= 1; i--) {
-        const radius = 58 * i * pulse;
+      for (let i = 4; i >= 1; i--) {
+        const radius = 35 * i * pulse;
         const grd = ctx.createRadialGradient(sx, sy, 0, sx, sy, radius);
         grd.addColorStop(0,   `rgba(255, 195, 40, ${0.045 / i})`);
         grd.addColorStop(0.6, `rgba(255, 150, 0,  ${0.02 / i})`);
@@ -202,7 +203,7 @@ const CONFIGS: Record<ZoneOrNeutral, ZoneConfig> = {
   },
 
   /* ----------------------------------------------------------------
-     WARM_HUMID — falling rain streaks + floating mist
+     WARM_HUMID ï¿½ falling rain streaks + floating mist
      ---------------------------------------------------------------- */
   WARM_HUMID: {
     count: 55,   // rain streaks (=60)
@@ -284,7 +285,7 @@ const CONFIGS: Record<ZoneOrNeutral, ZoneConfig> = {
   },
 
   /* ----------------------------------------------------------------
-     COMPOSITE — slow drifting warm gradient + dust particles
+     COMPOSITE ï¿½ slow drifting warm gradient + dust particles
      ---------------------------------------------------------------- */
   COMPOSITE: {
     count: 35,   // dust motes
@@ -338,7 +339,7 @@ const CONFIGS: Record<ZoneOrNeutral, ZoneConfig> = {
       ctx.restore();
     },
     extra: (ctx, w, h, t) => {
-      // Primary warm amber gradient blob — drifts slowly
+      // Primary warm amber gradient blob ï¿½ drifts slowly
       const ox1 = Math.sin(t * 0.12) * w * 0.14;
       const oy1 = Math.cos(t * 0.09) * h * 0.10;
       const g1 = ctx.createRadialGradient(w * 0.35 + ox1, h * 0.42 + oy1, 0, w * 0.35 + ox1, h * 0.42 + oy1, w * 0.55);
@@ -348,7 +349,7 @@ const CONFIGS: Record<ZoneOrNeutral, ZoneConfig> = {
       ctx.fillStyle = g1;
       ctx.fillRect(0, 0, w, h);
 
-      // Secondary sage gradient blob — slower drift, opposite phase
+      // Secondary sage gradient blob ï¿½ slower drift, opposite phase
       const ox2 = Math.cos(t * 0.08) * w * 0.12;
       const oy2 = Math.sin(t * 0.07) * h * 0.12;
       const g2 = ctx.createRadialGradient(w * 0.7 + ox2, h * 0.6 + oy2, 0, w * 0.7 + ox2, h * 0.6 + oy2, w * 0.45);
@@ -369,7 +370,7 @@ const CONFIGS: Record<ZoneOrNeutral, ZoneConfig> = {
   },
 
   /* ----------------------------------------------------------------
-     TEMPERATE — floating leaves + drifting clouds
+     TEMPERATE ï¿½ floating leaves + drifting clouds
      ---------------------------------------------------------------- */
   TEMPERATE: {
     count: 28,   // leaves
@@ -484,7 +485,7 @@ const CONFIGS: Record<ZoneOrNeutral, ZoneConfig> = {
   },
 
   /* ----------------------------------------------------------------
-     COLD — slow falling snowflakes with glowing halos
+     COLD ï¿½ slow falling snowflakes with glowing halos
      ---------------------------------------------------------------- */
   COLD: {
     count: 55,   // snowflakes
@@ -627,7 +628,7 @@ export default function AnimatedBackground() {
     return particles;
   }, []);
 
-  /* Main animation loop — runs once on mount */
+  /* Main animation loop ï¿½ runs once on mount */
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -644,7 +645,7 @@ export default function AnimatedBackground() {
     resize();
     window.addEventListener("resize", resize);
 
-    /* Pause when tab is hidden — saves CPU/GPU */
+    /* Pause when tab is hidden ï¿½ saves CPU/GPU */
     const onVisibility = () => { state.paused = document.hidden; };
     document.addEventListener("visibilitychange", onVisibility);
 
@@ -658,7 +659,7 @@ export default function AnimatedBackground() {
         ctx.fillStyle = cfg.bgGradient(ctx, w, h) as string;
         ctx.fillRect(0, 0, w, h);
 
-        /* Extra environmental effects (sun, aurora, mist…) */
+        /* Extra environmental effects (sun, aurora, mistï¿½) */
         cfg.extra?.(ctx, w, h, state.t);
 
         /* Particles */
@@ -679,9 +680,9 @@ export default function AnimatedBackground() {
       window.removeEventListener("resize", resize);
       document.removeEventListener("visibilitychange", onVisibility);
     };
-  }, []);  // intentionally empty — loop only mounts once
+  }, []);  // intentionally empty ï¿½ loop only mounts once
 
-  /* React to zone change — reset particles */
+  /* React to zone change ï¿½ reset particles */
   useEffect(() => {
     const canvas = canvasRef.current;
     const state  = stateRef.current;

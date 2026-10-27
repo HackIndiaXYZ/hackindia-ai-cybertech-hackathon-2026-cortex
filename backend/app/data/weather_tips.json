@@ -1,0 +1,66 @@
+{
+  "source": "NDMA Disaster Guidelines & Bioclimatic Extreme Weather Adaptation Standards",
+  "verified": false,
+  "alerts": {
+    "heatwave": [
+      {
+        "id": "tip-heatwave-shading",
+        "title": "Daytime Glazing Shielding",
+        "advice": "Keep external shutters and reflective curtains fully drawn between 10:00 AM and 5:00 PM.",
+        "reason": "Prevents direct infrared radiation from penetrating interior spaces during peak solar exposure hours."
+      },
+      {
+        "id": "tip-heatwave-water",
+        "title": "Evaporative Cooling Enhancement",
+        "advice": "Sprinkle terrace slabs or courtyard floors with water during late evening.",
+        "reason": "Evaporative heat absorption draws stored sensible heat out of masonry surfaces before nightfall."
+      },
+      {
+        "id": "tip-heatwave-night-vent",
+        "title": "Nocturnal Cross-Draft Activation",
+        "advice": "Open high and low opposing vents once outdoor air drops below indoor temperature (typically after 9:00 PM).",
+        "reason": "Flushes trapped hot air from ceiling zones and recharges wall thermal mass with cooler night air."
+      }
+    ],
+    "cold_wave": [
+      {
+        "id": "tip-coldwave-drafts",
+        "title": "Draft Elimination & Airlocks",
+        "advice": "Install door sweeps, seal window frame gaskets, and keep entry vestibule doors closed.",
+        "reason": "Infiltration of freezing wind through hairline gaps can account for up to 40% of room heating loss."
+      },
+      {
+        "id": "tip-coldwave-thermal-curtains",
+        "title": "Nocturnal Insulated Drapes",
+        "advice": "Close heavy thermal curtains or insulated shutters immediately as the sun sets.",
+        "reason": "Creates a protective still-air boundary layer that cuts radiant heat transfer through window glass."
+      },
+      {
+        "id": "tip-coldwave-solar-gain",
+        "title": "Daytime Solar Harvesting",
+        "advice": "Open South-facing curtains completely during sunlit midday hours.",
+        "reason": "Permits maximum passive solar radiation to warm interior mass floors and walls directly."
+      }
+    ],
+    "heavy_rain": [
+      {
+        "id": "tip-rain-drainage",
+        "title": "Roof & Plinth Runoff Clearance",
+        "advice": "Inspect rainwater downspouts, roof valley gutters, and plinth apron trenches before peak precipitation.",
+        "reason": "Prevents stormwater pooling near foundation footings and eliminates hydrostatic wall dampness."
+      },
+      {
+        "id": "tip-rain-ventilation",
+        "title": "Louvered Wet-Weather Aeration",
+        "advice": "Maintain air exchanges through protected louvered vents under wide roof eaves while keeping main window sashes shut.",
+        "reason": "Avoids stagnant indoor moisture accumulation and mold growth without admitting wind-blown rain."
+      },
+      {
+        "id": "tip-rain-barriers",
+        "title": "Plinth Protection & Flood Barriers",
+        "advice": "Deploy temporary flood barriers or sandbags at low threshold entrances if ground water levels rise.",
+        "reason": "Guards against surface water ingress during flash runoff events."
+      }
+    ]
+  }
+}

@@ -5,7 +5,7 @@ Defines request validation and the stable response contract.
 
 from typing import List, Optional
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field
 
 
 # ---------------------------------------------------------------------------
@@ -50,14 +50,39 @@ class LocationInfo(BaseModel):
     country: Optional[str] = None
 
 
+class DailyForecastItem(BaseModel):
+    """One day of forecast data from Open-Meteo daily."""
+
+    date: str = Field(description="Date in YYYY-MM-DD format.")
+    temp_max: Optional[float] = Field(None, description="Maximum temperature in \u00b0C.")
+    temp_min: Optional[float] = Field(None, description="Minimum temperature in \u00b0C.")
+    weather_code: Optional[int] = Field(None, description="WMO weather interpretation code.")
+    rain_probability: Optional[int] = Field(None, description="Max precipitation probability in %.")
+
+
+class HourlyForecastItem(BaseModel):
+    """One hour of forecast data from Open-Meteo hourly."""
+
+    time: str = Field(description="ISO-8601 datetime string (local time).")
+    temperature: float = Field(description="Air temperature in \u00b0C.")
+
+
 class WeatherInfo(BaseModel):
     """Current weather observation at the requested location."""
 
-    temperature: Optional[float] = Field(None, description="Air temperature in °C.")
+    temperature: Optional[float] = Field(None, description="Air temperature in \u00b0C.")
     humidity: Optional[int] = Field(None, description="Relative humidity in %.")
     wind_speed: Optional[float] = Field(None, description="Wind speed in km/h.")
     rainfall: Optional[float] = Field(None, description="Hourly rainfall in mm.")
     cloud_cover: Optional[int] = Field(None, description="Cloud cover in %.")
+    daily_forecast: Optional[List[DailyForecastItem]] = Field(
+        None,
+        description="7-day daily forecast. None when unavailable.",
+    )
+    hourly_forecast: Optional[List[HourlyForecastItem]] = Field(
+        None,
+        description="Next-24h hourly temperatures. None when unavailable.",
+    )
 
 
 class FloodInfo(BaseModel):

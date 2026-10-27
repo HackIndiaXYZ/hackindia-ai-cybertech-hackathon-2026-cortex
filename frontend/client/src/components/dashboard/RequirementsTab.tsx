@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { 
   Compass, 
@@ -8,11 +8,16 @@ import {
   AppWindow, 
   Sun, 
   Wind, 
-  Trees,
-  HelpCircle,
-  X
+  Trees, 
+  HelpCircle, 
+  X,
+  Loader
 } from "lucide-react";
 import { mockRequirements, Requirement } from "../../mock/requirements";
+import { getRequirements } from "../../services/api";
+import { useLocationContext } from "../../context/LocationContext";
+import { useClimateZone } from "../../theme/ClimateThemeProvider";
+import { mapToThemeZone } from "../../utils/climateMapping";
 import { staggerContainer, fadeUp } from "../../motion/variants";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
 
@@ -110,9 +115,6 @@ function RequirementCard({ req }: { req: Requirement }) {
   const [isFlipped, setIsFlipped] = useState(false);
   const reduce = useReducedMotion();
 
-  // If reduced motion is enabled, we fallback to an expand/collapse instead of flip,
-  // or just a simple crossfade. Let's use crossfade for reduced motion.
-  
   return (
     <motion.div
       variants={fadeUp}
@@ -120,7 +122,7 @@ function RequirementCard({ req }: { req: Requirement }) {
       style={{
         position: "relative",
         perspective: "1000px",
-        height: 240, // fixed height for the flip effect
+        height: 240,
         zIndex: isFlipped ? 10 : 1,
       }}
     >
@@ -244,8 +246,58 @@ function RequirementCard({ req }: { req: Requirement }) {
  * RequirementsTab Component
  */
 export default function RequirementsTab() {
-  const data = mockRequirements;
+  const { analysis } = useLocationContext();
+  const { zone: themeZone } = useClimateZone();
   const reduce = useReducedMotion();
+
+  // Determine active bioclimatic zone
+  const activeZone =
+    (themeZone !== "NEUTRAL" ? themeZone : null) ??
+    (analysis ? mapToThemeZone(analysis.analysis.classification) : null) ??
+    "COMPOSITE";
+
+  const [requirements, setRequirements] = useState<Requirement[]>(mockRequirements);
+  const [isFallback, setIsFallback] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    let isCancelled = false;
+    setIsLoading(true);
+
+    const alerts = analysis?.analysis?.conditions?.map((c) => c.toLowerCase()) ?? [];
+
+    getRequirements(activeZone, alerts)
+      .then((res) => {
+        if (isCancelled) return;
+        if (res?.strategies && res.strategies.length > 0) {
+          const mapped: Requirement[] = res.strategies.map((s, idx) => ({
+            id: s.id || `req-${s.element}-${idx}`,
+            title: s.title || (s.element.charAt(0).toUpperCase() + s.element.slice(1)),
+            recommendation: s.recommendation || s.value,
+            reason: s.reason,
+            iconType: (s.iconType || s.element) as Requirement["iconType"],
+          }));
+          setRequirements(mapped);
+          setIsFallback(false);
+        } else {
+          setRequirements(mockRequirements);
+          setIsFallback(true);
+        }
+      })
+      .catch((err) => {
+        if (isCancelled) return;
+        console.warn("Could not fetch requirements, using fallback:", err);
+        setRequirements(mockRequirements);
+        setIsFallback(true);
+      })
+      .finally(() => {
+        if (!isCancelled) setIsLoading(false);
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [activeZone, analysis]);
 
   return (
     <motion.div
@@ -260,7 +312,44 @@ export default function RequirementsTab() {
       }}
     >
       <motion.div variants={reduce ? undefined : fadeUp} style={{ maxWidth: 800 }}>
-        <h2 style={{ fontSize: "var(--text-2xl)", margin: "0 0 var(--space-2)" }}>Design Requirements</h2>
+        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", marginBottom: "var(--space-2)" }}>
+          <h2 style={{ fontSize: "var(--text-2xl)", margin: 0 }}>Design Requirements</h2>
+          {isLoading && (
+            <Loader size={16} color="var(--primary)" style={{ animation: "spin 1s linear infinite" }} />
+          )}
+          {isFallback ? (
+            <span
+              style={{
+                fontSize: "11px",
+                fontWeight: 700,
+                color: "var(--muted)",
+                background: "var(--border)",
+                padding: "2px 8px",
+                borderRadius: "var(--radius-full)",
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+              }}
+            >
+              demo data
+            </span>
+          ) : (
+            <span
+              style={{
+                fontSize: "11px",
+                fontWeight: 700,
+                color: "var(--primary)",
+                background: "rgba(var(--primary-rgb), 0.1)",
+                border: "1px solid rgba(var(--primary-rgb), 0.25)",
+                padding: "2px 8px",
+                borderRadius: "var(--radius-full)",
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+              }}
+            >
+              {activeZone.replace("_", " ")}
+            </span>
+          )}
+        </div>
         <p style={{ color: "var(--muted)", margin: 0, fontSize: "var(--text-md)", lineHeight: 1.6 }}>
           Based on the detected climate zone, here are the core architectural recommendations to ensure maximum thermal comfort and energy efficiency.
         </p>
@@ -273,7 +362,7 @@ export default function RequirementsTab() {
           gap: "var(--space-6)" 
         }}
       >
-        {data.map((req) => (
+        {requirements.map((req) => (
           <RequirementCard key={req.id} req={req} />
         ))}
       </div>

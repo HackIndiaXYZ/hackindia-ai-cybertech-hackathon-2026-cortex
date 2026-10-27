@@ -22,12 +22,81 @@ import {
   Eye,
   ChevronDown,
   ChevronUp,
+  Snowflake,
+  CloudLightning,
+  CloudDrizzle,
 } from "lucide-react";
-import { mockWeather, WeatherData } from "../../mock/weather";
 import { alertThresholds } from "../../config/weatherAlerts";
 import { staggerContainer, fadeUp } from "../../motion/variants";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
 import { useLocationContext } from "../../context/LocationContext";
+import type { DailyForecastItem, HourlyForecastItem } from "../../services/analyzeService";
+
+/* -----------------------------------------------------------------
+   WMO WEATHER CODE MAPPING
+   https://open-meteo.com/en/docs → Weather variable descriptions
+----------------------------------------------------------------- */
+function wmoLabel(code: number | null): string {
+  if (code === null) return "Cloudy";
+  if (code === 0) return "Sunny";
+  if (code <= 3) return "Cloudy";
+  if (code <= 48) return "Foggy";
+  if (code <= 67) return "Rainy";
+  if (code <= 77) return "Snow";
+  if (code <= 82) return "Rainy";
+  if (code <= 99) return "Thunderstorm";
+  return "Cloudy";
+}
+
+function WmoIcon({ code, size = 28 }: { code: number | null; size?: number }) {
+  if (code === null) return <Cloud size={size} color="#94A3B8" />;
+  if (code === 0) return <Sun size={size} color="#FBBF24" />;
+  if (code <= 3) return <Cloud size={size} color="#94A3B8" />;
+  if (code <= 48) return <Cloud size={size} color="#CBD5E1" />;
+  if (code <= 57) return <CloudDrizzle size={size} color="#60A5FA" />;
+  if (code <= 67) return <CloudRain size={size} color="#60A5FA" />;
+  if (code <= 77) return <Snowflake size={size} color="#BAE6FD" />;
+  if (code <= 82) return <CloudRain size={size} color="#60A5FA" />;
+  if (code <= 99) return <CloudLightning size={size} color="#A78BFA" />;
+  return <Cloud size={size} color="#94A3B8" />;
+}
+
+function wmoCondColor(code: number | null): string {
+  if (code === null) return "#94A3B8";
+  if (code === 0) return "#FBBF24";
+  if (code <= 3) return "#94A3B8";
+  if (code <= 48) return "#CBD5E1";
+  if (code <= 67) return "#60A5FA";
+  if (code <= 77) return "#BAE6FD";
+  if (code <= 82) return "#60A5FA";
+  if (code <= 99) return "#A78BFA";
+  return "#94A3B8";
+}
+
+/* -----------------------------------------------------------------
+   DATE → SHORT DAY LABEL
+----------------------------------------------------------------- */
+function dayLabel(dateStr: string, index: number): string {
+  if (index === 0) return "Today";
+  try {
+    const d = new Date(dateStr + "T12:00:00"); // noon avoids DST edge
+    return d.toLocaleDateString("en-US", { weekday: "short" });
+  } catch {
+    return dateStr;
+  }
+}
+
+/* -----------------------------------------------------------------
+   ISO datetime → "3 PM" style label
+----------------------------------------------------------------- */
+function hourLabel(isoTime: string): string {
+  try {
+    const d = new Date(isoTime);
+    return d.toLocaleTimeString("en-US", { hour: "numeric", hour12: true });
+  } catch {
+    return isoTime;
+  }
+}
 
 /* -----------------------------------------------------------------
    UTILITY: eased number count-up hook
@@ -64,7 +133,7 @@ function CountUp({ to, duration }: { to: number; duration?: number }) {
 }
 
 /* -----------------------------------------------------------------
-   COMPONENT: Animated Weather Icon
+   COMPONENT: Animated Weather Icon (current conditions)
 ----------------------------------------------------------------- */
 function WeatherIcon({ condition, size = 72 }: { condition: string; size?: number }) {
   const reduce = useReducedMotion();
@@ -228,7 +297,11 @@ const ALERT_STYLES: Record<AlertType, { bg: string; border: string; color: strin
   rain: { bg: "rgba(99,102,241,0.12)", border: "#6366F1", color: "#312E81", label: "Heavy Rain Warning" },
 };
 
-const ALERT_EMOJI: Record<AlertType, string> = { heat: "??", cold: "??", rain: "???" };
+const ALERT_EMOJI: Record<AlertType, string> = {
+  heat: "\uD83D\uDD25",
+  cold: "\u2744\uFE0F",
+  rain: "\uD83C\uDF27\uFE0F",
+};
 
 interface AlertBannerProps {
   type: AlertType;
@@ -269,7 +342,7 @@ function AlertBanner({ type, temp, rain, tip }: AlertBannerProps) {
           <AlertTriangle size={22} color={s.border} />
         </motion.div>
         <span style={{ fontWeight: 700, fontSize: "var(--text-base)", flex: 1 }}>
-          {ALERT_EMOJI[type]} {s.label} � {type === "rain" ? `${rain}mm expected` : `${temp}�C`}
+          {ALERT_EMOJI[type]} {s.label} &mdash; {type === "rain" ? `${rain}mm expected` : `${temp}\u00B0C`}
         </span>
         {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
       </button>
@@ -287,7 +360,7 @@ function AlertBanner({ type, temp, rain, tip }: AlertBannerProps) {
               padding: "0 var(--space-5) var(--space-4) calc(var(--space-5) + 28px)",
               fontSize: "var(--text-sm)", color: s.color, lineHeight: 1.6,
             }}>
-              ?? <strong>Tip:</strong> {tip}
+              💡 <strong>Tip:</strong> {tip}
             </div>
           </motion.div>
         )}
@@ -317,7 +390,7 @@ function CustomTooltip({ active, payload, label }: TooltipProps) {
       backdropFilter: "blur(8px)",
     }}>
       <div style={{ fontSize: "var(--text-xs)", color: "var(--muted)", marginBottom: 2 }}>{label}</div>
-      <div style={{ fontSize: "var(--text-xl)", fontWeight: 700 }}>{payload[0].value}�C</div>
+      <div style={{ fontSize: "var(--text-xl)", fontWeight: 700 }}>{payload[0].value}&deg;C</div>
     </div>
   );
 }
@@ -326,17 +399,16 @@ function CustomTooltip({ active, payload, label }: TooltipProps) {
    COMPONENT: Daily forecast card
 ----------------------------------------------------------------- */
 interface DayCardProps {
-  day: string;
-  minTemp: number;
-  maxTemp: number;
-  condition: string;
+  day: DailyForecastItem;
+  label: string;
   index: number;
 }
 
-function DayCard({ day, minTemp, maxTemp, condition, index }: DayCardProps) {
+function DayCard({ day, label, index }: DayCardProps) {
   const reduce = useReducedMotion();
-  const condColor = condition === "Sunny" || condition === "Clear"
-    ? "#FBBF24" : condition === "Rainy" ? "#60A5FA" : "#94A3B8";
+  const condColor = wmoCondColor(day.weather_code);
+  const maxT = day.temp_max ?? 0;
+  const minT = day.temp_min ?? 0;
 
   return (
     <motion.div
@@ -358,22 +430,18 @@ function DayCard({ day, minTemp, maxTemp, condition, index }: DayCardProps) {
       }}
     >
       <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: condColor, borderRadius: "var(--radius-lg) var(--radius-lg) 0 0" }} />
-      <div style={{ fontWeight: 700, fontSize: "var(--text-sm)", color: "var(--text)" }}>{day}</div>
+      <div style={{ fontWeight: 700, fontSize: "var(--text-sm)", color: "var(--text)" }}>{label}</div>
       <div style={{ margin: "var(--space-2) 0" }}>
-        {condition === "Sunny" || condition === "Clear"
-          ? <Sun size={28} color="#FBBF24" />
-          : condition === "Rainy"
-          ? <CloudRain size={28} color="#60A5FA" />
-          : <Cloud size={28} color="#94A3B8" />}
+        <WmoIcon code={day.weather_code} size={28} />
       </div>
       <div style={{ display: "flex", gap: "var(--space-2)", fontSize: "var(--text-sm)", alignItems: "baseline" }}>
-        <span style={{ fontWeight: 800, fontSize: "var(--text-base)" }}>{maxTemp}�</span>
-        <span style={{ color: "var(--muted)" }}>{minTemp}�</span>
+        <span style={{ fontWeight: 800, fontSize: "var(--text-base)" }}>{Math.round(maxT)}&deg;</span>
+        <span style={{ color: "var(--muted)" }}>{Math.round(minT)}&deg;</span>
       </div>
       <div style={{ width: "100%", height: 4, background: "var(--border)", borderRadius: 2, overflow: "hidden", marginTop: "var(--space-1)" }}>
         <motion.div
           initial={{ width: 0 }}
-          whileInView={{ width: `${Math.round(((maxTemp - minTemp) / 25) * 100)}%` }}
+          whileInView={{ width: `${Math.round(((maxT - minT) / 25) * 100)}%` }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.1 + index * 0.06 }}
           style={{ height: "100%", background: condColor, borderRadius: 2 }}
@@ -384,41 +452,77 @@ function DayCard({ day, minTemp, maxTemp, condition, index }: DayCardProps) {
 }
 
 /* -----------------------------------------------------------------
+   COMPONENT: Loading skeleton
+----------------------------------------------------------------- */
+function SkeletonBlock({ h = 20, w = "100%" }: { h?: number; w?: number | string }) {
+  return (
+    <div
+      style={{
+        height: h,
+        width: w,
+        borderRadius: "var(--radius-md)",
+        background: "var(--border)",
+        animation: "pulse 1.5s ease-in-out infinite",
+      }}
+    />
+  );
+}
+
+/* -----------------------------------------------------------------
    MAIN COMPONENT: WeatherTab
 ----------------------------------------------------------------- */
 export default function WeatherTab() {
   const { analysis, location } = useLocationContext();
   const reduce = useReducedMotion();
 
-  // Merge real API data over the mock template (mock provides hourly/daily charts)
-  const data: WeatherData = {
-    ...mockWeather,
-    location: location?.name ?? mockWeather.location,
-    temperature: analysis?.weather?.temperature ?? mockWeather.temperature,
-    humidity: analysis?.weather?.humidity ?? mockWeather.humidity,
-    windSpeed: analysis?.weather?.wind_speed ?? mockWeather.windSpeed,
-    rainVolume: analysis?.weather?.rainfall ?? mockWeather.rainVolume,
-  };
+  const weather = analysis?.weather;
 
+  /* ---- Current conditions ---- */
+  const temperature = weather?.temperature ?? 0;
+  const humidity = weather?.humidity ?? 0;
+  const windSpeed = weather?.wind_speed ?? 0;
+  const rainVolume = weather?.rainfall ?? 0;
+
+  /* ---- Determine current condition label for icon ---- */
+  // Use today's daily_forecast WMO code if available, else derive from rainfall/cloud
+  const todayCode = weather?.daily_forecast?.[0]?.weather_code ?? null;
+  const currentCondition: string = todayCode !== null
+    ? wmoLabel(todayCode)
+    : rainVolume > 1 ? "Rainy" : (weather?.cloud_cover ?? 50) > 60 ? "Cloudy" : "Sunny";
+
+  /* ---- Hourly chart data ---- */
+  const hourlyRaw: HourlyForecastItem[] | null = weather?.hourly_forecast ?? null;
+  const hourlyChartData = hourlyRaw
+    ? hourlyRaw.map((h) => ({ time: hourLabel(h.time), temp: Math.round(h.temperature) }))
+    : null;
+  const avgTemp = hourlyChartData && hourlyChartData.length > 0
+    ? Math.round(hourlyChartData.reduce((s, h) => s + h.temp, 0) / hourlyChartData.length)
+    : 0;
+
+  /* ---- 7-day forecast ---- */
+  const dailyForecast: DailyForecastItem[] | null = weather?.daily_forecast ?? null;
+
+  /* ---- Alerts ---- */
   const alerts: { type: AlertType; tip: string }[] = [];
-  if (data.temperature >= alertThresholds.heatwaveTemp) {
+  if (temperature >= alertThresholds.heatwaveTemp) {
     alerts.push({ type: "heat", tip: alertThresholds.tips.heat });
   }
-  if (data.temperature <= alertThresholds.coldwaveTemp) {
+  if (temperature <= alertThresholds.coldwaveTemp) {
     alerts.push({ type: "cold", tip: alertThresholds.tips.cold });
   }
-  if (data.rainVolume >= alertThresholds.heavyRainMm) {
+  if (rainVolume >= alertThresholds.heavyRainMm) {
     alerts.push({ type: "rain", tip: alertThresholds.tips.rain });
   }
 
+  /* ---- Stat rings ---- */
   const stats = [
-    { icon: <Droplets size={16} />, label: "Humidity", value: `${data.humidity}%`, pct: data.humidity, color: "#3B82F6" },
-    { icon: <Wind size={16} />, label: "Wind", value: `${data.windSpeed} km/h`, pct: Math.min((data.windSpeed / 80) * 100, 100), color: "#10B981" },
-    { icon: <Umbrella size={16} />, label: "Rain", value: `${data.rainVolume} mm`, pct: Math.min((data.rainVolume / 50) * 100, 100), color: "#6366F1" },
-    { icon: <Sun size={16} />, label: "UV Index", value: `${data.uvIndex}/11`, pct: (data.uvIndex / 11) * 100, color: "#F59E0B" },
+    { icon: <Droplets size={16} />, label: "Humidity", value: `${humidity}%`, pct: humidity, color: "#3B82F6" },
+    { icon: <Wind size={16} />, label: "Wind", value: `${windSpeed} km/h`, pct: Math.min((windSpeed / 80) * 100, 100), color: "#10B981" },
+    { icon: <Umbrella size={16} />, label: "Rain", value: `${rainVolume} mm`, pct: Math.min((rainVolume / 50) * 100, 100), color: "#6366F1" },
+    { icon: <Sun size={16} />, label: "Cloud Cover", value: `${weather?.cloud_cover ?? 0}%`, pct: weather?.cloud_cover ?? 0, color: "#F59E0B" },
   ];
 
-  const avgTemp = Math.round(data.hourly.reduce((s, h) => s + h.temp, 0) / data.hourly.length);
+  const hasData = !!analysis;
 
   return (
     <motion.div
@@ -431,7 +535,7 @@ export default function WeatherTab() {
       {alerts.length > 0 && (
         <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
           {alerts.map(({ type, tip }) => (
-            <AlertBanner key={type} type={type} temp={data.temperature} rain={data.rainVolume} tip={tip} />
+            <AlertBanner key={type} type={type} temp={temperature} rain={rainVolume} tip={tip} />
           ))}
         </div>
       )}
@@ -461,27 +565,27 @@ export default function WeatherTab() {
               <span style={{ fontSize: "var(--text-sm)", color: "var(--muted)", fontWeight: 500 }}>Current Temperature</span>
             </div>
             <div style={{ fontSize: "5rem", fontWeight: 800, fontFamily: "var(--font-heading)", lineHeight: 1, color: "var(--text)", letterSpacing: "-0.04em" }}>
-              <CountUp to={data.temperature} duration={1400} />
-              <span style={{ fontSize: "2.5rem", fontWeight: 600, color: "var(--muted)" }}>�C</span>
+              {hasData ? <CountUp to={Math.round(temperature)} duration={1400} /> : <span>--</span>}
+              <span style={{ fontSize: "2.5rem", fontWeight: 600, color: "var(--muted)" }}>&deg;C</span>
             </div>
             <div style={{ marginTop: "var(--space-3)", display: "flex", alignItems: "center", gap: "var(--space-2)", flexWrap: "wrap" }}>
               <span style={{
                 display: "inline-block", padding: "2px 10px",
                 borderRadius: "var(--radius-full)",
-                background: data.condition === "Sunny" || data.condition === "Clear" ? "rgba(251,191,36,0.2)" : data.condition === "Rainy" ? "rgba(96,165,250,0.2)" : "rgba(148,163,184,0.2)",
-                color: data.condition === "Sunny" || data.condition === "Clear" ? "#92400E" : data.condition === "Rainy" ? "#1E40AF" : "var(--muted)",
+                background: currentCondition === "Sunny" || currentCondition === "Clear" ? "rgba(251,191,36,0.2)" : currentCondition === "Rainy" ? "rgba(96,165,250,0.2)" : "rgba(148,163,184,0.2)",
+                color: currentCondition === "Sunny" || currentCondition === "Clear" ? "#92400E" : currentCondition === "Rainy" ? "#1E40AF" : "var(--muted)",
                 fontSize: "var(--text-sm)", fontWeight: 600,
               }}>
-                {data.condition}
+                {currentCondition}
               </span>
               <span style={{ fontSize: "var(--text-sm)", color: "var(--muted)", display: "flex", alignItems: "center", gap: 4 }}>
                 <Eye size={12} />
-                {data.location}
+                {location?.name ?? "—"}
               </span>
             </div>
           </div>
           <div style={{ flexShrink: 0 }}>
-            <WeatherIcon condition={data.condition} size={80} />
+            <WeatherIcon condition={currentCondition} size={80} />
           </div>
         </motion.div>
 
@@ -497,34 +601,54 @@ export default function WeatherTab() {
       <motion.div variants={reduce ? undefined : fadeUp} className="card" style={{ padding: "var(--space-6)", overflow: "hidden" }}>
         <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: "var(--space-5)" }}>
           <h3 style={{ margin: 0, fontFamily: "var(--font-heading)", fontSize: "var(--text-lg)" }}>Next 24 Hours</h3>
-          <span style={{ fontSize: "var(--text-xs)", color: "var(--muted)" }}>avg {avgTemp}�C</span>
+          {hourlyChartData && (
+            <span style={{ fontSize: "var(--text-xs)", color: "var(--muted)" }}>avg {avgTemp}&deg;C</span>
+          )}
         </div>
-        <div style={{ height: 260, width: "100%" }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={data.hourly} margin={{ top: 5, right: 8, left: -10, bottom: 5 }}>
-              <defs>
-                <linearGradient id="wt-lineGrad" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="#6366F1" stopOpacity={0.5} />
-                  <stop offset="100%" stopColor="#6366F1" stopOpacity={1} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
-              <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fill: "var(--muted)", fontSize: 11 }} dy={8} interval={3} />
-              <YAxis domain={["dataMin - 2", "dataMax + 2"]} axisLine={false} tickLine={false} tick={{ fill: "var(--muted)", fontSize: 11 }} tickFormatter={(v: number) => `${v}\u00b0`} dx={-4} />
-              <ReferenceLine y={avgTemp} stroke="var(--muted)" strokeDasharray="4 4" strokeOpacity={0.5} />
-              <Tooltip content={<CustomTooltip />} />
-              <Line
-                type="monotone" dataKey="temp"
-                stroke="url(#wt-lineGrad)"
-                strokeWidth={3} dot={false}
-                activeDot={{ r: 7, fill: "#6366F1", stroke: "#fff", strokeWidth: 2 }}
-                animationDuration={reduce ? 0 : 1800}
-                animationEasing="ease-out"
-                animationBegin={0}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
+
+        {!hasData ? (
+          /* Loading skeleton */
+          <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+            <SkeletonBlock h={260} />
+          </div>
+        ) : !hourlyChartData ? (
+          /* No forecast empty state */
+          <div style={{
+            height: 260, display: "flex", flexDirection: "column",
+            alignItems: "center", justifyContent: "center",
+            color: "var(--muted)", gap: "var(--space-2)",
+          }}>
+            <Cloud size={40} style={{ opacity: 0.4 }} />
+            <span style={{ fontSize: "var(--text-sm)" }}>Hourly forecast unavailable</span>
+          </div>
+        ) : (
+          <div style={{ height: 260, width: "100%" }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={hourlyChartData} margin={{ top: 5, right: 8, left: -10, bottom: 5 }}>
+                <defs>
+                  <linearGradient id="wt-lineGrad" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="#6366F1" stopOpacity={0.5} />
+                    <stop offset="100%" stopColor="#6366F1" stopOpacity={1} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
+                <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fill: "var(--muted)", fontSize: 11 }} dy={8} interval={3} />
+                <YAxis domain={["dataMin - 2", "dataMax + 2"]} axisLine={false} tickLine={false} tick={{ fill: "var(--muted)", fontSize: 11 }} tickFormatter={(v: number) => `${v}\u00B0`} dx={-4} />
+                <ReferenceLine y={avgTemp} stroke="var(--muted)" strokeDasharray="4 4" strokeOpacity={0.5} />
+                <Tooltip content={<CustomTooltip />} />
+                <Line
+                  type="monotone" dataKey="temp"
+                  stroke="url(#wt-lineGrad)"
+                  strokeWidth={3} dot={false}
+                  activeDot={{ r: 7, fill: "#6366F1", stroke: "#fff", strokeWidth: 2 }}
+                  animationDuration={reduce ? 0 : 1800}
+                  animationEasing="ease-out"
+                  animationBegin={0}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        )}
       </motion.div>
 
       {/* 7-DAY FORECAST */}
@@ -536,13 +660,37 @@ export default function WeatherTab() {
         style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}
       >
         <h3 style={{ margin: 0, fontFamily: "var(--font-heading)", fontSize: "var(--text-lg)", marginLeft: "var(--space-1)" }}>7-Day Forecast</h3>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))", gap: "var(--space-3)" }}>
-          {data.daily.map((day, i) => (
-            <DayCard key={day.day} day={day.day} minTemp={day.minTemp} maxTemp={day.maxTemp} condition={day.condition} index={i} />
-          ))}
-        </div>
+
+        {!hasData ? (
+          /* Loading skeleton for 7 cards */
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))", gap: "var(--space-3)" }}>
+            {Array.from({ length: 7 }).map((_, i) => (
+              <div key={i} className="card" style={{ padding: "var(--space-5) var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+                <SkeletonBlock h={14} w="60%" />
+                <SkeletonBlock h={28} w={28} />
+                <SkeletonBlock h={14} w="80%" />
+              </div>
+            ))}
+          </div>
+        ) : !dailyForecast ? (
+          /* No forecast empty state */
+          <div style={{
+            padding: "var(--space-8)",
+            display: "flex", flexDirection: "column",
+            alignItems: "center", justifyContent: "center",
+            color: "var(--muted)", gap: "var(--space-2)",
+          }}>
+            <Cloud size={40} style={{ opacity: 0.4 }} />
+            <span style={{ fontSize: "var(--text-sm)" }}>7-day forecast unavailable for this location</span>
+          </div>
+        ) : (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))", gap: "var(--space-3)" }}>
+            {dailyForecast.map((day, i) => (
+              <DayCard key={day.date} day={day} label={dayLabel(day.date, i)} index={i} />
+            ))}
+          </div>
+        )}
       </motion.div>
     </motion.div>
   );
 }
-

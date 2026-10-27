@@ -1,8 +1,22 @@
-
+# Python
 .pytest_cache/
 __pycache__/
 *.pyc
+venv/
+.venv/
+env/
 
-.pytest_cache/
-__pycache__/
-*.pyc
+# Node & Build artifacts
+node_modules/
+dist/
+dist-ssr/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# IDE & OS
+.DS_Store
+.vscode/
+.idea/

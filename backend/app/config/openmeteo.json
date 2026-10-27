@@ -1,0 +1,28 @@
+{
+  "source": "Open-Meteo Historical Weather Archive API",
+  "verified": false,
+  "archive_url": "https://archive-api.open-meteo.com/v1/archive",
+  "timeout_seconds": 20.0,
+  "max_retries": 2,
+  "default_years": 5,
+  "daily_variables": [
+    "temperature_2m_max",
+    "temperature_2m_min",
+    "temperature_2m_mean",
+    "precipitation_sum",
+    "wind_speed_10m_max",
+    "shortwave_radiation_sum"
+  ],
+  "hourly_variables": [
+    "relative_humidity_2m"
+  ],
+  "qc_rules": {
+    "temperature_min_valid": -90.0,
+    "temperature_max_valid": 60.0,
+    "interpolation_max_gap_days": 3,
+    "hot_day_threshold_c": 40.0,
+    "cold_day_threshold_c": 5.0
+  },
+  "cache_ttl_seconds": 86400,
+  "cache_coord_precision": 2
+}

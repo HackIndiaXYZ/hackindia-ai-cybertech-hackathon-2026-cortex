@@ -1,12 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, ChevronUp, AlertCircle, Info } from "lucide-react";
-import { mockZoneRisk } from "../../mock/zoneRisk";
+import { ChevronDown, ChevronUp, AlertCircle, Info, Database, CheckCircle2 } from "lucide-react";
+import { mockZoneRisk, type ZoneRiskData } from "../../mock/zoneRisk";
+import { getZone, getRisk, type ZoneApiResponse, type ThermalRiskResponse } from "../../services/api";
 import { useClimateZone } from "../../theme/ClimateThemeProvider";
 import { staggerContainer, fadeUp } from "../../motion/variants";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
-import type { ZoneOrNeutral } from "../../types";
 import { useLocationContext } from "../../context/LocationContext";
+import { mapToThemeZone } from "../../utils/climateMapping";
 
 function CircularProgress({ value, label, color }: { value: number; label: string; color: string }) {
   const reduce = useReducedMotion();
@@ -103,49 +104,92 @@ function SemiCircleGauge({ value, label, color }: { value: number; label: string
   );
 }
 
-/** Map backend classification string -> frontend ClimateZone key */
-function classificationToZone(cls: string): string {
-  const map: Record<string, string> = {
-    "Cold": "COLD",
-    "Cold-Humid": "COLD",
-    "Hot-Dry": "HOT_DRY",
-    "Hot-Humid": "WARM_HUMID",
-    "Moderate": "TEMPERATE",
-    "Variable": "COMPOSITE",
-  };
-  return map[cls] ?? "COMPOSITE";
-}
-
 export default function ZoneRiskTab() {
-  const { analysis } = useLocationContext();
+  const { analysis, location } = useLocationContext();
   const { setZone } = useClimateZone();
   const reduce = useReducedMotion();
   const [whyExpanded, setWhyExpanded] = useState(false);
   const [stampSettled, setStampSettled] = useState(false);
 
-  // Build display data — prefer real API, fall back to mock
-  const apiZone = analysis ? classificationToZone(analysis.analysis.classification) : null;
-  const data = {
-    ...mockZoneRisk,
-    zone: apiZone ?? mockZoneRisk.zone,
-    ruleBasedZone: apiZone ?? mockZoneRisk.ruleBasedZone,
-    mlZone: apiZone ?? mockZoneRisk.mlZone,
-    explanation: analysis
-      ? `${analysis.analysis.summary} Flood risk: ${analysis.flood.risk}.`
-      : mockZoneRisk.explanation,
-    whyNumbers: analysis
-      ? {
-          avgSummerTemp: analysis.weather.temperature ?? mockZoneRisk.whyNumbers.avgSummerTemp,
-          avgWinterTemp: mockZoneRisk.whyNumbers.avgWinterTemp,
-          annualRainfall: mockZoneRisk.whyNumbers.annualRainfall,
-        }
-      : mockZoneRisk.whyNumbers,
-  };
+  const [riskData, setRiskData] = useState<ThermalRiskResponse | null>(null);
+  const [zoneData, setZoneData] = useState<ZoneApiResponse | null>(null);
+  const [isFallback, setIsFallback] = useState(false);
+
+  const lat = analysis?.location?.latitude ?? location?.lat ?? 28.6139;
+  const lon = analysis?.location?.longitude ?? location?.lon ?? 77.2090;
+
+  const loadData = useCallback(() => {
+    let isCancelled = false;
+
+    Promise.allSettled([
+      getZone(lat, lon),
+      getRisk(lat, lon),
+    ]).then(([zoneRes, riskRes]) => {
+      if (isCancelled) return;
+
+      if (zoneRes.status === "fulfilled") {
+        setZoneData(zoneRes.value);
+        setIsFallback(false);
+        // Automatically switch theme when zone arrives
+        setZone(mapToThemeZone(zoneRes.value.zone));
+      } else {
+        console.warn("Could not fetch 5-zone classification, using fallback:", zoneRes.reason);
+        setIsFallback(true);
+      }
+
+      if (riskRes.status === "fulfilled") {
+        setRiskData(riskRes.value);
+      } else {
+        console.warn("Could not fetch thermal risk assessment, using fallback:", riskRes.reason);
+        setIsFallback(true);
+      }
+    });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [lat, lon, setZone]);
+
+  useEffect(() => {
+    const cleanup = loadData();
+    return cleanup;
+  }, [loadData]);
+
+  // Build unified display data from live zone & risk or mock fallback
+  const resolvedZone = zoneData?.zone ?? (analysis ? mapToThemeZone(analysis.analysis.classification) : mockZoneRisk.zone);
+
+  const data: ZoneRiskData = riskData
+    ? {
+        zone: resolvedZone,
+        confidence: riskData.confidence,
+        heatStress: riskData.heatStress,
+        coldStress: riskData.coldStress,
+        whyNumbers: riskData.whyNumbers,
+        explanation: riskData.explanation,
+        ruleBasedZone: zoneData?.zone ?? riskData.ruleBasedZone,
+        mlZone: riskData.mlZone,
+      }
+    : {
+        ...mockZoneRisk,
+        zone: resolvedZone,
+        ruleBasedZone: resolvedZone,
+        mlZone: resolvedZone,
+        explanation: analysis
+          ? `${analysis.analysis.summary} Flood risk: ${analysis.flood.risk}.`
+          : mockZoneRisk.explanation,
+        whyNumbers: analysis
+          ? {
+              avgSummerTemp: analysis.weather.temperature ?? mockZoneRisk.whyNumbers.avgSummerTemp,
+              avgWinterTemp: mockZoneRisk.whyNumbers.avgWinterTemp,
+              annualRainfall: mockZoneRisk.whyNumbers.annualRainfall,
+            }
+          : mockZoneRisk.whyNumbers,
+      };
 
   // Trigger theme change AFTER the stamp settles, or immediately if reduced motion
   useEffect(() => {
     if (reduce) {
-      setZone(data.zone as ZoneOrNeutral);
+      setZone(mapToThemeZone(data.zone));
       setStampSettled(true);
     }
   }, [reduce, data.zone, setZone]);
@@ -173,8 +217,48 @@ export default function ZoneRiskTab() {
         overflow: "hidden", position: "relative",
         background: `linear-gradient(135deg, var(--surface) 0%, ${zColor}10 100%)`
       }}>
-        <div style={{ color: "var(--muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "var(--space-6)", fontSize: "var(--text-sm)" }}>
-          Identified Climate Zone
+        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", marginBottom: "var(--space-6)" }}>
+          <span style={{ color: "var(--muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", fontSize: "var(--text-sm)" }}>
+            Identified Climate Zone
+          </span>
+          {isFallback ? (
+            <span
+              style={{
+                background: "rgba(245, 158, 11, 0.12)",
+                color: "#D97706",
+                border: "1px solid rgba(245, 158, 11, 0.25)",
+                padding: "2px 8px",
+                borderRadius: "var(--radius-full)",
+                fontSize: "11px",
+                fontWeight: 600,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 4,
+              }}
+            >
+              <Database size={11} />
+              demo data
+            </span>
+          ) : (
+            <span
+              style={{
+                background: "rgba(16, 185, 129, 0.12)",
+                color: "#10B981",
+                border: "1px solid rgba(16, 185, 129, 0.25)",
+                padding: "2px 8px",
+                borderRadius: "var(--radius-full)",
+                fontSize: "11px",
+                fontWeight: 700,
+                letterSpacing: "0.03em",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 4,
+              }}
+            >
+              <CheckCircle2 size={12} />
+              LIVE CLASSIFICATION
+            </span>
+          )}
         </div>
         
         <motion.div
@@ -187,7 +271,7 @@ export default function ZoneRiskTab() {
           }}
           onAnimationComplete={() => {
             if (!reduce) {
-              setZone(data.zone as ZoneOrNeutral);
+              setZone(mapToThemeZone(data.zone));
               setStampSettled(true);
             }
           }}
@@ -210,9 +294,65 @@ export default function ZoneRiskTab() {
           {data.zone.replace("_", " & ")}
         </motion.div>
         
-        <p style={{ color: "var(--text)", maxWidth: 600, fontSize: "var(--text-lg)", lineHeight: 1.6 }}>
+        <p style={{ color: "var(--text)", maxWidth: 640, fontSize: "var(--text-lg)", lineHeight: 1.6, margin: "0 0 var(--space-4)" }}>
           This zone determines your building's primary thermal strategy, material choices, and roof structure.
         </p>
+
+        {/* Reason Line from getZone */}
+        {zoneData?.reason && (
+          <motion.div
+            variants={reduce ? undefined : fadeUp}
+            style={{
+              padding: "var(--space-3) var(--space-5)",
+              background: "rgba(0,0,0,0.03)",
+              border: "1px solid var(--border)",
+              borderRadius: "var(--radius-lg)",
+              maxWidth: 680,
+              textAlign: "center",
+              marginTop: "var(--space-2)",
+            }}
+          >
+            <span style={{ fontSize: "var(--text-sm)", color: "var(--text)", lineHeight: 1.5 }}>
+              <b>Classification Rule:</b> {zoneData.reason}
+            </span>
+          </motion.div>
+        )}
+
+        {/* Matched Values Grid from getZone */}
+        {zoneData?.values && (
+          <motion.div
+            variants={reduce ? undefined : fadeUp}
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
+              gap: "var(--space-3)",
+              marginTop: "var(--space-6)",
+              width: "100%",
+              maxWidth: 680,
+            }}
+          >
+            <div style={{ background: "var(--surface)", border: "1px solid var(--border)", padding: "var(--space-3)", borderRadius: "var(--radius-md)", textAlign: "center" }}>
+              <div style={{ fontSize: "11px", color: "var(--muted)", textTransform: "uppercase", fontWeight: 600 }}>Hottest Max</div>
+              <div style={{ fontSize: "1.1rem", fontWeight: 800, color: "#EF4444" }}>{zoneData.values.hottest_month_max}°C</div>
+            </div>
+            <div style={{ background: "var(--surface)", border: "1px solid var(--border)", padding: "var(--space-3)", borderRadius: "var(--radius-md)", textAlign: "center" }}>
+              <div style={{ fontSize: "11px", color: "var(--muted)", textTransform: "uppercase", fontWeight: 600 }}>Coldest Min</div>
+              <div style={{ fontSize: "1.1rem", fontWeight: 800, color: "#3B82F6" }}>{zoneData.values.coldest_month_min}°C</div>
+            </div>
+            <div style={{ background: "var(--surface)", border: "1px solid var(--border)", padding: "var(--space-3)", borderRadius: "var(--radius-md)", textAlign: "center" }}>
+              <div style={{ fontSize: "11px", color: "var(--muted)", textTransform: "uppercase", fontWeight: 600 }}>Coldest Mean</div>
+              <div style={{ fontSize: "1.1rem", fontWeight: 800, color: "#6366F1" }}>{zoneData.values.coldest_month_mean}°C</div>
+            </div>
+            <div style={{ background: "var(--surface)", border: "1px solid var(--border)", padding: "var(--space-3)", borderRadius: "var(--radius-md)", textAlign: "center" }}>
+              <div style={{ fontSize: "11px", color: "var(--muted)", textTransform: "uppercase", fontWeight: 600 }}>Summer Humidity</div>
+              <div style={{ fontSize: "1.1rem", fontWeight: 800, color: "#10B981" }}>{zoneData.values.hot_season_humidity}%</div>
+            </div>
+            <div style={{ background: "var(--surface)", border: "1px solid var(--border)", padding: "var(--space-3)", borderRadius: "var(--radius-md)", textAlign: "center" }}>
+              <div style={{ fontSize: "11px", color: "var(--muted)", textTransform: "uppercase", fontWeight: 600 }}>Annual Rain</div>
+              <div style={{ fontSize: "1.1rem", fontWeight: 800, color: "#0EA5E9" }}>{zoneData.values.annual_rain} mm</div>
+            </div>
+          </motion.div>
+        )}
 
         {/* ML vs Rule Note */}
         {data.mlZone !== data.ruleBasedZone && (

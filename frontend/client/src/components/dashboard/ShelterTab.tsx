@@ -1,4 +1,4 @@
-import { useState, Suspense, useEffect } from "react";
+import { useState, Suspense, useEffect, Component, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { fadeUp, staggerContainer } from "../../motion/variants";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
@@ -24,11 +24,57 @@ import {
   ClimateFeatureAnnotation,
   mapClassificationToArchetype,
 } from "../../viz/climateShelterData";
+import { getPlanForZone } from "../../mock/planData";
+import { getSpec, type DesignSpecResponse } from "../../services/api";
+import PlanSVG from "../../viz/PlanSVG";
 
 // Direct import for instant 3D rendering
 import ShelterCanvas from "../../viz/ShelterCanvas";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+function isWebGLAvailable(): boolean {
+  try {
+    const canvas = document.createElement("canvas");
+    return !!(
+      window.WebGLRenderingContext &&
+      (canvas.getContext("webgl") || canvas.getContext("experimental-webgl"))
+    );
+  } catch {
+    return false;
+  }
+}
+
+interface ErrorBoundaryProps {
+  fallback: ReactNode;
+  children: ReactNode;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+}
+
+class CanvasErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: unknown) {
+    console.warn("WebGL / Canvas render error caught, falling back to 2D mock plan:", error);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+    return this.props.children;
+  }
+}
 
 function CanvasSkeleton() {
   return (
@@ -99,6 +145,39 @@ export default function ShelterTab() {
   const [viewMode, setViewMode] = useState<"exterior" | "cutaway">("exterior");
   const [selectedFeature, setSelectedFeature] = useState<ClimateFeatureAnnotation | null>(null);
 
+  // WebGL availability state
+  const [webGLSupported, setWebGLSupported] = useState<boolean>(true);
+
+  useEffect(() => {
+    setWebGLSupported(isWebGLAvailable());
+  }, []);
+
+  // Shared parametric spec (same spec used by PlanSVG and ShelterCanvas)
+  const [liveSpec, setLiveSpec] = useState<DesignSpecResponse | null>(null);
+  const [isLoadingSpec, setIsLoadingSpec] = useState(false);
+  const fallbackSpec = getPlanForZone(selectedZone);
+  const planSpec = liveSpec ?? fallbackSpec;
+
+  useEffect(() => {
+    let isCancelled = false;
+    setIsLoadingSpec(true);
+    getSpec(selectedZone, undefined, { w: 14.0, l: 16.0, bedrooms: 2 })
+      .then((res) => {
+        if (!isCancelled) setLiveSpec(res);
+      })
+      .catch((err) => {
+        console.warn("Could not fetch design spec for 3D model, using mock fallback:", err);
+        if (!isCancelled) setLiveSpec(null);
+      })
+      .finally(() => {
+        if (!isCancelled) setIsLoadingSpec(false);
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [selectedZone]);
+
   const activeConfig = CLIMATE_SHELTER_CONFIGS[selectedZone] || CLIMATE_SHELTER_CONFIGS.TEMPERATE;
 
   // Format time (e.g. 13.5 -> 1:30 PM)
@@ -161,6 +240,12 @@ export default function ShelterTab() {
             >
               <Sparkles size={14} />
               CLIMATE REPORT 3D ADAPTATION ACTIVE
+              {isLoadingSpec && (
+                <span style={{ opacity: 0.7 }}>• Loading Spec…</span>
+              )}
+              {!isLoadingSpec && liveSpec && (
+                <span style={{ opacity: 0.85 }}>• LIVE SPEC</span>
+              )}
             </div>
 
             <h2 style={{ fontSize: "var(--text-2xl)", margin: "0 0 var(--space-2)", fontWeight: 800 }}>
@@ -381,15 +466,36 @@ export default function ShelterTab() {
             background: "#0f172a",
           }}
         >
-          <Suspense fallback={<CanvasSkeleton />}>
-            <ShelterCanvas
-              climateZone={selectedZone}
-              timeOfDay={time}
-              month={month}
-              viewMode={viewMode}
-              onSelectFeature={(feat) => setSelectedFeature(feat)}
-            />
-          </Suspense>
+          {webGLSupported ? (
+            <CanvasErrorBoundary
+              fallback={
+                <div style={{ width: "100%", height: "100%", padding: "var(--space-4)", background: "#f8fafc" }}>
+                  <p style={{ color: "var(--muted)", fontSize: "var(--text-xs)", marginBottom: "var(--space-2)", textAlign: "center" }}>
+                    WebGL unavailable — showing 2D plan view
+                  </p>
+                  <PlanSVG spec={planSpec} />
+                </div>
+              }
+            >
+              <Suspense fallback={<CanvasSkeleton />}>
+                <ShelterCanvas
+                  climateZone={selectedZone}
+                  timeOfDay={time}
+                  month={month}
+                  viewMode={viewMode}
+                  onSelectFeature={(feat) => setSelectedFeature(feat)}
+                  spec={planSpec}
+                />
+              </Suspense>
+            </CanvasErrorBoundary>
+          ) : (
+            <div style={{ width: "100%", height: "100%", padding: "var(--space-4)", background: "#f8fafc" }}>
+              <p style={{ color: "var(--muted)", fontSize: "var(--text-xs)", marginBottom: "var(--space-2)", textAlign: "center" }}>
+                WebGL not supported in this browser — showing 2D plan view
+              </p>
+              <PlanSVG spec={planSpec} />
+            </div>
+          )}
 
           {/* Active 3D Feature Detail Box Overlay */}
           <AnimatePresence>

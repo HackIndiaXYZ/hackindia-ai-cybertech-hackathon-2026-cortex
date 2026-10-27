@@ -1,0 +1,74 @@
+{
+  "source": "NBC 2016 Part 8 Building Services (Section 1 Lighting and Ventilation) & ECBC 2017 Passive Design Guidelines",
+  "verified": false,
+  "placeholder_note": "Bioclimatic envelope dimensions and orientation angles are design baselines to be verified against localized site conditions and microclimates.",
+  "min_plot_width": 8.0,
+  "max_plot_width": 100.0,
+  "min_plot_length": 8.0,
+  "max_plot_length": 100.0,
+  "min_bedrooms": 1,
+  "max_bedrooms": 5,
+  "zones": {
+    "HOT_DRY": {
+      "roof_type": "parapet_courtyard",
+      "overhang": 0.8,
+      "wall_thickness": 0.38,
+      "orientation": -10.0,
+      "courtyard_required": true,
+      "notes": [
+        "Compact courtyard geometry to maximize internal thermal inertia.",
+        "Thick rammed earth/brick perimeter walls attenuate intense daytime heat gain.",
+        "Small exterior apertures with deep reveals minimize solar insolation on hot facades.",
+        "Central courtyard facilitates nocturnal long-wave radiation cooling to the night sky."
+      ]
+    },
+    "COMPOSITE": {
+      "roof_type": "hybrid_composite",
+      "overhang": 0.9,
+      "wall_thickness": 0.32,
+      "orientation": 0.0,
+      "courtyard_required": true,
+      "notes": [
+        "Balanced courtyard layout adaptable to both hot dry summers and cool winters.",
+        "Seasonal courtyard shading prevents summer overheating while admitting winter sun.",
+        "Moderate-to-high thermal mass evens out extreme seasonal diurnal swings."
+      ]
+    },
+    "WARM_HUMID": {
+      "roof_type": "hipped_stilted",
+      "overhang": 1.2,
+      "wall_thickness": 0.20,
+      "orientation": 0.0,
+      "courtyard_required": false,
+      "notes": [
+        "Linear east-west elongation maximizing north and south facades for cross-ventilation.",
+        "Deep 1.2m roof overhangs and shaded verandah deflect high tropical sun and driving monsoon rain.",
+        "Continuous window louvers along prevailing wind axes induce continuous convective air currents."
+      ]
+    },
+    "COLD": {
+      "roof_type": "steep_gable",
+      "overhang": 0.4,
+      "wall_thickness": 0.45,
+      "orientation": 5.0,
+      "courtyard_required": false,
+      "notes": [
+        "Steep 42° gabled roof naturally sheds heavy alpine snow loads.",
+        "Direct gain passive solar aperture on South facade maximizes winter heat harvesting.",
+        "Protected double-door entry airlock buffer seals against sub-zero northern drafts.",
+        "Thick insulated thermal envelope retains indoor hearth and solar warmth."
+      ]
+    },
+    "TEMPERATE": {
+      "roof_type": "monopitch_solar",
+      "overhang": 0.7,
+      "wall_thickness": 0.25,
+      "orientation": 0.0,
+      "courtyard_required": false,
+      "notes": [
+        "Balanced envelope opening into shaded garden and outdoor living terrace.",
+        "Moderate thermal mass and cross-daylighting deliver passive thermal comfort year-round."
+      ]
+    }
+  }
+}
