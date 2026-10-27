@@ -1,4 +1,4 @@
-# Thermal_Shelter
+# Eco Shelter
 # start frontend 
 cd frontend
 npm install
