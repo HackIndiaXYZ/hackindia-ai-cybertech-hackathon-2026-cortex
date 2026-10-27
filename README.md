@@ -1,10 +1,10 @@
 # Thermal_Shelter
 # start frontend 
-cd C:\Users\Pranshu\OneDrive\Documents\Backend\frontend\client
+cd frontend
 npm install
 npm run dev
 
 # start backend 
-cd C:\Users\Pranshu\OneDrive\Documents\Backend\backend
+cd backend
 .\venv\Scripts\Activate.ps1
 uvicorn app.main:app --reload
