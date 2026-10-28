@@ -1,0 +1,89 @@
+{
+  "source": "NBC 2016 Part 8 (Lighting & Ventilation) / ECBC 2017 Bioclimatic Design Guidelines & Open-Meteo 5-Year Climate Archive",
+  "verified": false,
+  "description": "Fixed feature specification and order for the EcoShelter Design Recommender ML model. Both training and inference pipelines must strictly adhere to this order.",
+  "feature_order": [
+    "latitude",
+    "hottest_month_max",
+    "coldest_month_min",
+    "coldest_month_mean",
+    "hot_season_humidity",
+    "annual_rain",
+    "wind_mean",
+    "solar_mean",
+    "days_above_40",
+    "days_below_5"
+  ],
+  "features": [
+    {
+      "name": "latitude",
+      "unit": "°N",
+      "description": "Geographic latitude in decimal degrees (-90 to 90). Reflects solar angle and seasonal day-length variation.",
+      "min_value": -90.0,
+      "max_value": 90.0
+    },
+    {
+      "name": "hottest_month_max",
+      "unit": "°C",
+      "description": "Average daily maximum temperature during the hottest month of the year across a 5-year historical period.",
+      "min_value": 15.0,
+      "max_value": 55.0
+    },
+    {
+      "name": "coldest_month_min",
+      "unit": "°C",
+      "description": "Average daily minimum temperature during the coldest month of the year across a 5-year historical period.",
+      "min_value": -35.0,
+      "max_value": 30.0
+    },
+    {
+      "name": "coldest_month_mean",
+      "unit": "°C",
+      "description": "Average daily mean temperature during the coldest month of the year.",
+      "min_value": -30.0,
+      "max_value": 32.0
+    },
+    {
+      "name": "hot_season_humidity",
+      "unit": "%",
+      "description": "Average relative humidity during the hottest month or summer season.",
+      "min_value": 5.0,
+      "max_value": 100.0
+    },
+    {
+      "name": "annual_rain",
+      "unit": "mm",
+      "description": "Average annual total rainfall across the 5-year historical period.",
+      "min_value": 10.0,
+      "max_value": 5000.0
+    },
+    {
+      "name": "wind_mean",
+      "unit": "km/h",
+      "description": "Average daily maximum wind speed across all 12 months.",
+      "min_value": 1.0,
+      "max_value": 60.0
+    },
+    {
+      "name": "solar_mean",
+      "unit": "MJ/m²",
+      "description": "Average daily shortwave solar radiation across all 12 months.",
+      "min_value": 5.0,
+      "max_value": 35.0
+    },
+    {
+      "name": "days_above_40",
+      "unit": "days/year",
+      "description": "Average number of days per year where daily maximum temperature reaches or exceeds 40°C.",
+      "min_value": 0.0,
+      "max_value": 180.0
+    },
+    {
+      "name": "days_below_5",
+      "unit": "days/year",
+      "description": "Average number of days per year where daily minimum temperature falls to or below 5°C.",
+      "min_value": 0.0,
+      "max_value": 365.0
+    }
+  ]
+}

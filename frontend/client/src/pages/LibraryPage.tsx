@@ -30,6 +30,13 @@ import {
   rankDesignsBySuitability,
   SuitabilityResult,
 } from "../utils/suitability";
+import {
+  getHinglishDescription,
+  getHinglishWhyItWorks,
+  getHinglishKeyFeatures,
+  toHinglishReason,
+  toHinglishLimitation,
+} from "../data/vernacularHinglish";
 
 const FILTER_OPTIONS: Array<"All" | ClimateZone> = [
   "All",
@@ -1025,7 +1032,7 @@ export default function LibraryPage() {
                     lineHeight: 1.6,
                   }}
                 >
-                  {selectedItem.description}
+                  {getHinglishDescription(selectedItem.id, selectedItem.description)}
                 </p>
 
                 {/* Suitability Analysis Section in Modal */}
@@ -1051,7 +1058,7 @@ export default function LibraryPage() {
                       }}
                     >
                       <Building2 size={16} color="var(--primary)" />
-                      Suitability for {selectedLocation.name} ({resolvedLocation.zone} Zone)
+                      {selectedLocation.name} ({resolvedLocation.zone} Zone) ke liye suitability
                     </div>
 
                     {selectedItem.suitability.status === "Not yet evaluated" ? (
@@ -1063,8 +1070,7 @@ export default function LibraryPage() {
                           lineHeight: 1.5,
                         }}
                       >
-                        {selectedItem.suitability.reasons[0] ||
-                          `Not yet evaluated for ${selectedLocation.name} until passive features are assessed.`}
+                        {selectedLocation.name} ke liye abhi evaluation baaki hai jab tak passive features assess nahi hote.
                       </p>
                     ) : (
                       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -1079,7 +1085,7 @@ export default function LibraryPage() {
                             }}
                           >
                             <span style={{ color: "#059669" }}>✓</span>
-                            <span>{r}</span>
+                            <span>{toHinglishReason(r)}</span>
                           </div>
                         ))}
                         {selectedItem.suitability.limitations.map((l, i) => (
@@ -1093,7 +1099,7 @@ export default function LibraryPage() {
                             }}
                           >
                             <span style={{ color: "#d97706" }}>⚠</span>
-                            <span>{l}</span>
+                            <span>{toHinglishLimitation(l)}</span>
                           </div>
                         ))}
                       </div>
@@ -1117,7 +1123,7 @@ export default function LibraryPage() {
                     }}
                   >
                     <ShieldCheck size={16} color="var(--primary)" />
-                    Verified Passive Architectural Features
+                    Passive Architectural Features jo kaam aate hain
                   </div>
                   <ul
                     style={{
@@ -1129,7 +1135,7 @@ export default function LibraryPage() {
                       gap: "var(--space-2)",
                     }}
                   >
-                    {selectedItem.keyPassiveFeatures.map((feature, i) => (
+                    {getHinglishKeyFeatures(selectedItem.id, selectedItem.keyPassiveFeatures).map((feature, i) => (
                       <li
                         key={i}
                         style={{
@@ -1174,7 +1180,7 @@ export default function LibraryPage() {
                       gap: 6,
                     }}
                   >
-                    <span>💡</span> Why it works in its origin climate
+                    <span>💡</span> Apne origin climate me ye kaise kaam karta hai
                   </div>
                   <p
                     style={{
@@ -1184,7 +1190,7 @@ export default function LibraryPage() {
                       lineHeight: 1.6,
                     }}
                   >
-                    {selectedItem.whyItWorks}
+                    {getHinglishWhyItWorks(selectedItem.id, selectedItem.whyItWorks)}
                   </p>
                 </div>
               </div>

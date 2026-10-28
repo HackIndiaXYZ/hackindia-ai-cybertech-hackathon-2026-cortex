@@ -1,0 +1,166 @@
+{
+  "source": "NBC 2016 Part 8 (Lighting & Ventilation) & ECBC 2017 Bioclimatic Architectural Guidelines",
+  "verified": false,
+  "description": "Bioclimatic reasoning templates that match real design attributes against site microclimatic conditions.",
+  "templates": [
+    {
+      "id": "thermal_mass_hot_dry",
+      "attribute": "thermal_mass",
+      "attribute_values": ["high"],
+      "climate_conditions": {
+        "hottest_month_max_min": 35.0,
+        "hot_season_humidity_max": 50.0
+      },
+      "template": "High thermal mass ({wall_material_display}) dampens peak heat waves, moderating indoor temperatures during {hottest_month_max}°C summers.",
+      "priority": 1
+    },
+    {
+      "id": "thermal_mass_cold_buffer",
+      "attribute": "thermal_mass",
+      "attribute_values": ["high", "medium"],
+      "climate_conditions": {
+        "coldest_month_min_max": 5.0
+      },
+      "template": "Thick thermal mass ({wall_material_display}) retains indoor heat and stabilizes nocturnal temperatures when outdoor lows hit {coldest_month_min}°C.",
+      "priority": 2
+    },
+    {
+      "id": "low_mass_humid_cooling",
+      "attribute": "thermal_mass",
+      "attribute_values": ["low"],
+      "climate_conditions": {
+        "hot_season_humidity_min": 60.0
+      },
+      "template": "Low thermal mass ({wall_material_display}) sheds heat rapidly after sunset, avoiding night-time radiative heat traps in humid {hot_season_humidity}% RH weather.",
+      "priority": 2
+    },
+    {
+      "id": "cross_ventilation_humid",
+      "attribute": "ventilation",
+      "attribute_values": ["cross"],
+      "climate_conditions": {
+        "hot_season_humidity_min": 55.0
+      },
+      "template": "Cross-ventilation orientation with open aperture layout maximizes convective skin cooling under sustained humid ({hot_season_humidity}% RH) conditions.",
+      "priority": 1
+    },
+    {
+      "id": "night_purge_ventilation",
+      "attribute": "ventilation",
+      "attribute_values": ["night"],
+      "climate_conditions": {
+        "hottest_month_max_min": 32.0,
+        "hot_season_humidity_max": 50.0
+      },
+      "template": "Nocturnal purge ventilation flushes daytime heat stored in the envelope using cooler night ambient air.",
+      "priority": 2
+    },
+    {
+      "id": "stack_ventilation",
+      "attribute": "ventilation",
+      "attribute_values": ["stack"],
+      "climate_conditions": {
+        "hottest_month_max_min": 30.0
+      },
+      "template": "Thermal stack effect draws cooler ambient air through low inlets while discharging buoyant warm air through high roof relief vents.",
+      "priority": 3
+    },
+    {
+      "id": "sloped_roof_monsoon",
+      "attribute": "roof_type",
+      "attribute_values": ["steep_gable", "hipped_stilted"],
+      "climate_conditions": {
+        "annual_rain_min": 1000.0
+      },
+      "template": "Pitched {roof_type_display} profile ensures rapid rainwater runoff drainage against {annual_rain} mm annual monsoon precipitation.",
+      "priority": 1
+    },
+    {
+      "id": "steep_gable_snow",
+      "attribute": "roof_type",
+      "attribute_values": ["steep_gable"],
+      "climate_conditions": {
+        "days_below_5_min": 15.0
+      },
+      "template": "Steeply pitched gable roof cleanly sheds heavy seasonal snow accumulation, eliminating structural ponding and freeze hazards.",
+      "priority": 1
+    },
+    {
+      "id": "solar_monopitch",
+      "attribute": "roof_type",
+      "attribute_values": ["monopitch_solar"],
+      "climate_conditions": {
+        "solar_mean_min": 18.0
+      },
+      "template": "South-angled monopitch solar roof maximizes photovoltaic capture and passive winter insolation ({solar_mean} MJ/m² daily solar radiation).",
+      "priority": 3
+    },
+    {
+      "id": "courtyard_evaporative_cooling",
+      "attribute": "has_courtyard",
+      "attribute_values": [true],
+      "climate_conditions": {
+        "hot_season_humidity_max": 55.0,
+        "hottest_month_max_min": 32.0
+      },
+      "template": "Central open courtyard acts as a nocturnal microclimatic cooling sink, inducing evaporative thermal circulation throughout adjacent living spaces.",
+      "priority": 2
+    },
+    {
+      "id": "raised_floor_flood_safety",
+      "attribute": "raised_floor",
+      "attribute_values": [true],
+      "climate_conditions": {
+        "annual_rain_min": 1100.0
+      },
+      "template": "Elevated stilt foundation protects the primary living core from surface water runoff and monsoon ground saturation.",
+      "priority": 1
+    },
+    {
+      "id": "raised_floor_breeze_capture",
+      "attribute": "raised_floor",
+      "attribute_values": [true],
+      "climate_conditions": {
+        "hot_season_humidity_min": 60.0
+      },
+      "template": "Elevated floor platform captures higher-velocity boundary layer wind currents above ground level for improved natural ventilation.",
+      "priority": 2
+    },
+    {
+      "id": "high_insulation_cold",
+      "attribute": "insulation",
+      "attribute_values": ["high"],
+      "climate_conditions": {
+        "coldest_month_min_max": 6.0
+      },
+      "template": "High-performance envelope insulation minimizes conductive thermal bridging when ambient temperatures fall to {coldest_month_min}°C.",
+      "priority": 1
+    },
+    {
+      "id": "deep_external_shading",
+      "attribute": "shading_depth",
+      "attribute_values": ["high"],
+      "climate_conditions": {
+        "hottest_month_max_min": 32.0
+      },
+      "template": "Deep external overhangs and louvered shading block peak solar radiation while preserving natural daylighting and ventilation pathways.",
+      "priority": 3
+    },
+    {
+      "id": "vernacular_low_carbon",
+      "attribute": "wall_material",
+      "attribute_values": ["woven_bamboo", "adobe_mud_brick", "rammed_earth", "mud_ferro_cement", "compressed_earth_block"],
+      "climate_conditions": {},
+      "template": "Bio-based vernacular envelope utilizing locally sourced {wall_material_display} significantly cuts embodied carbon and environmental footprint.",
+      "priority": 4
+    },
+    {
+      "id": "economic_vernacular_cost",
+      "attribute": "estimated_cost_level",
+      "attribute_values": [1, 2],
+      "climate_conditions": {},
+      "template": "Economical level {estimated_cost_level} vernacular construction strategy delivers high cost efficiency using accessible regional trade techniques.",
+      "priority": 4
+    }
+  ]
+}

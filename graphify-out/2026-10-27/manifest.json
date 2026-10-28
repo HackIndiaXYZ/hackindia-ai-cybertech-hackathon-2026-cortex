@@ -54,9 +54,9 @@
     "semantic_hash": ""
   },
   "backend/app/main.py": {
-    "mtime": 1793089854.8103187,
-    "seen": 1793090752.3423693,
-    "ast_hash": "6342262c9e4081a6b5e90660a89307db",
+    "mtime": 1793122056.8772457,
+    "seen": 1793123129.619671,
+    "ast_hash": "a04f42ba4339259ee5341f78d8edf58c",
     "semantic_hash": ""
   },
   "backend/app/schemas/__init__.py": {
@@ -150,9 +150,9 @@
     "semantic_hash": ""
   },
   "backend/requirements.txt": {
-    "mtime": 1793034071.5540853,
-    "seen": 1793034818.8871558,
-    "ast_hash": "eb75a56b121b177dcfed1e52574bdf07",
+    "mtime": 1793121491.0046852,
+    "seen": 1793123129.61991,
+    "ast_hash": "35af77b1eb233f02fb380f0505c5f9f9",
     "semantic_hash": ""
   },
   ".vscode/launch.json": {
@@ -258,33 +258,33 @@
     "semantic_hash": ""
   },
   "frontend/client/src/components/dashboard/ClimateTab.tsx": {
-    "mtime": 1792948414.5940418,
-    "seen": 1792997069.1201715,
-    "ast_hash": "71707afe52abb9be2e1506a8cd32af1d",
+    "mtime": 1793094067.2041073,
+    "seen": 1793094183.637966,
+    "ast_hash": "fc1cc0ff30a81ea24b29f06295a93e81",
     "semantic_hash": ""
   },
   "frontend/client/src/components/dashboard/DesignsTab.tsx": {
-    "mtime": 1793090027.228472,
-    "seen": 1793090752.3424106,
-    "ast_hash": "9daf82350d646a57262b46e9934f35ee",
+    "mtime": 1793094678.8962586,
+    "seen": 1793123129.6197703,
+    "ast_hash": "29bf999f4bd8c341833e0b002ddfe31e",
     "semantic_hash": ""
   },
   "frontend/client/src/components/dashboard/PlanTab.tsx": {
-    "mtime": 1793093048.8289173,
-    "seen": 1793093111.8940682,
-    "ast_hash": "553fb6964211706fd1a818c41ce04ff7",
+    "mtime": 1793094777.2265587,
+    "seen": 1793123129.6197727,
+    "ast_hash": "ac16c5c56f4d99bedeab4b151f09b0f5",
     "semantic_hash": ""
   },
   "frontend/client/src/components/dashboard/RequirementsTab.tsx": {
-    "mtime": 1792744695.399512,
-    "seen": 1792746923.86893,
-    "ast_hash": "afb8448480f15b0fd4ffc1496ba66a03",
+    "mtime": 1793094601.4111004,
+    "seen": 1793123129.6197777,
+    "ast_hash": "373d75448066773be5a30426dafec6ca",
     "semantic_hash": ""
   },
   "frontend/client/src/components/dashboard/ShelterTab.tsx": {
-    "mtime": 1792775809.054458,
-    "seen": 1792775866.8230639,
-    "ast_hash": "8f9224c41a0b788b20642e593ae0c2ec",
+    "mtime": 1793095086.5627675,
+    "seen": 1793123129.6197798,
+    "ast_hash": "8291f884670f245ce41cbc823ddb1eb7",
     "semantic_hash": ""
   },
   "frontend/client/src/components/dashboard/WeatherTab.tsx": {
@@ -294,9 +294,9 @@
     "semantic_hash": ""
   },
   "frontend/client/src/components/dashboard/ZoneRiskTab.tsx": {
-    "mtime": 1793089498.6963086,
-    "seen": 1793090752.3424163,
-    "ast_hash": "106d64b21f93c53bebc0d24060c8545a",
+    "mtime": 1793094112.6859295,
+    "seen": 1793094183.6379848,
+    "ast_hash": "a2535c57cdff83c8435726a8675c1636",
     "semantic_hash": ""
   },
   "frontend/client/src/config/weatherAlerts.ts": {
@@ -378,15 +378,15 @@
     "semantic_hash": ""
   },
   "frontend/client/src/pages/ComparePage.tsx": {
-    "mtime": 1792744695.5797856,
-    "seen": 1792746923.8689702,
-    "ast_hash": "bf6283ac84a542d93a98d8c918ada372",
+    "mtime": 1793094712.189101,
+    "seen": 1793123129.6198254,
+    "ast_hash": "6fc8e28f21e4eb9ecde9fb595242d879",
     "semantic_hash": ""
   },
   "frontend/client/src/pages/DashboardPage.tsx": {
-    "mtime": 1793032735.6337876,
-    "seen": 1793032826.6048043,
-    "ast_hash": "079cccb2478cbd27add62c31f5f24a01",
+    "mtime": 1793122424.3612447,
+    "seen": 1793123129.6198277,
+    "ast_hash": "5f17091ba60cfcba39db718daf22728c",
     "semantic_hash": ""
   },
   "frontend/client/src/pages/EmergencyPage.tsx": {
@@ -408,9 +408,9 @@
     "semantic_hash": ""
   },
   "frontend/client/src/services/analyzeService.ts": {
-    "mtime": 1793092909.041639,
-    "seen": 1793093111.8941448,
-    "ast_hash": "d8e906059ec69d422960c75c4c58661d",
+    "mtime": 1793122228.546238,
+    "seen": 1793123129.619837,
+    "ast_hash": "ce47b6dc4f5db9eba69c830943ba9442",
     "semantic_hash": ""
   },
   "frontend/client/src/services/locationService.ts": {
@@ -438,9 +438,9 @@
     "semantic_hash": ""
   },
   "frontend/client/src/viz/ShelterCanvas.tsx": {
-    "mtime": 1792773233.2172651,
-    "seen": 1792773310.1260495,
-    "ast_hash": "235eb7d4b19da31106be99546a8dbb45",
+    "mtime": 1793094835.6977968,
+    "seen": 1793123129.6198614,
+    "ast_hash": "6709250ca2e049993a6099434b6c012c",
     "semantic_hash": ""
   },
   "frontend/client/tailwind.config.cjs": {
@@ -564,9 +564,9 @@
     "semantic_hash": ""
   },
   "frontend/client/src/utils/climateMapping.ts": {
-    "mtime": 1792914464.9754987,
-    "seen": 1792997069.1202304,
-    "ast_hash": "1d9d0e2bfe36f345e00ff4bcfcba1858",
+    "mtime": 1793093647.118499,
+    "seen": 1793094183.6380596,
+    "ast_hash": "393e1fcf03a81ed30417d48edfa519f6",
     "semantic_hash": ""
   },
   "frontend/client/src/utils/dxfExport.ts": {
@@ -594,9 +594,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1792947728.0140395,
-    "seen": 1792997069.120267,
-    "ast_hash": "0444359d6b80a3d4f79c568935d57d16",
+    "mtime": 1793109760.5495481,
+    "seen": 1793123129.6199048,
+    "ast_hash": "fd361b4e5c8c2e79726b0194a294530d",
     "semantic_hash": ""
   },
   "frontend/client/public/images/library/alpine-chalet.jpg": {
@@ -648,9 +648,9 @@
     "semantic_hash": ""
   },
   "frontend/client/vercel.json": {
-    "mtime": 1793029895.473667,
-    "seen": 1793031284.9039812,
-    "ast_hash": "cf6fad1ce721da13630f9f3e7b81fd0c",
+    "mtime": 1793096361.9592724,
+    "seen": 1793123129.6198783,
+    "ast_hash": "708d5c51f791050d9e26edd7c98fe336",
     "semantic_hash": ""
   },
   "docs/INCOMPLETE_WORK_RULES.md": {
@@ -660,9 +660,9 @@
     "semantic_hash": ""
   },
   "backend/app/api/routes/climate.py": {
-    "mtime": 1793034372.6864047,
-    "seen": 1793034818.8868744,
-    "ast_hash": "74f7c88f96cf08dc3c8966ce1ed5338b",
+    "mtime": 1793122192.3307831,
+    "seen": 1793123129.6196277,
+    "ast_hash": "f8c30d57be2e2cdccd9702353496e740",
     "semantic_hash": ""
   },
   "backend/app/config/openmeteo.json": {
@@ -849,6 +849,36 @@
     "mtime": 1793092750.8459227,
     "seen": 1793093111.8940117,
     "ast_hash": "ad639aeea5ffd97b69c11e8ef000b85d",
+    "semantic_hash": ""
+  },
+  "frontend/client/src/services/api.ts": {
+    "mtime": 1793122244.2494133,
+    "seen": 1793123129.619839,
+    "ast_hash": "e06f5a41add80f91f92e422e7e231b74",
+    "semantic_hash": ""
+  },
+  "backend/app/api/routes/report.py": {
+    "mtime": 1793122034.4976075,
+    "seen": 1793123129.619634,
+    "ast_hash": "5a0f29cbdde1286851f6b56580568740",
+    "semantic_hash": ""
+  },
+  "backend/app/schemas/report_schema.py": {
+    "mtime": 1793121848.2706835,
+    "seen": 1793123129.619683,
+    "ast_hash": "f6d8e53cc61fa42875412c513003e544",
+    "semantic_hash": ""
+  },
+  "backend/app/services/report_service.py": {
+    "mtime": 1793121955.8041363,
+    "seen": 1793123129.6197028,
+    "ast_hash": "7572861568da7b6389ed57f4fd7f8644",
+    "semantic_hash": ""
+  },
+  "backend/tests/test_report.py": {
+    "mtime": 1793122089.5780563,
+    "seen": 1793123129.6197195,
+    "ast_hash": "d8975acc8609d43ad92cb36734426d57",
     "semantic_hash": ""
   }
 }

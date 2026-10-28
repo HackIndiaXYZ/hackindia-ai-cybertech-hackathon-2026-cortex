@@ -118,7 +118,11 @@ function CanvasSkeleton() {
   );
 }
 
-export default function ShelterTab() {
+export interface ShelterTabProps {
+  selectedArchetype?: string | null;
+}
+
+export default function ShelterTab({ selectedArchetype }: ShelterTabProps = {}) {
   const reduce = useReducedMotion();
   const { zone: themeZone } = useClimateZone();
   const { analysis, location } = useLocationContext();
@@ -129,11 +133,33 @@ export default function ShelterTab() {
     analysis?.flood.risk
   );
 
-  // Allow user to toggle between auto detected and manual exploration
-  const [selectedZone, setSelectedZone] = useState<ActiveClimateArchetype>(detectedArchetype);
-  const [isAutoMode, setIsAutoMode] = useState(true);
+  // Check if selectedArchetype is valid in 3D configs
+  const isRecognized3D = selectedArchetype
+    ? Boolean(CLIMATE_SHELTER_CONFIGS[selectedArchetype.toUpperCase().replace(/[- ]/g, "_") as ActiveClimateArchetype])
+    : true;
 
-  // Sync with backend analysis when it arrives
+  // Allow user to toggle between auto detected and manual exploration
+  const [selectedZone, setSelectedZone] = useState<ActiveClimateArchetype>(() => {
+    if (selectedArchetype) {
+      const key = selectedArchetype.toUpperCase().replace(/[- ]/g, "_") as ActiveClimateArchetype;
+      if (CLIMATE_SHELTER_CONFIGS[key]) return key;
+    }
+    return detectedArchetype;
+  });
+  const [isAutoMode, setIsAutoMode] = useState(!selectedArchetype);
+
+  // Sync with selectedArchetype prop when passed from 3D button
+  useEffect(() => {
+    if (selectedArchetype) {
+      const key = selectedArchetype.toUpperCase().replace(/[- ]/g, "_") as ActiveClimateArchetype;
+      if (CLIMATE_SHELTER_CONFIGS[key]) {
+        setSelectedZone(key);
+        setIsAutoMode(false);
+      }
+    }
+  }, [selectedArchetype]);
+
+  // Sync with backend analysis when it arrives (only if auto mode)
   useEffect(() => {
     if (isAutoMode) {
       setSelectedZone(detectedArchetype);
@@ -254,6 +280,22 @@ export default function ShelterTab() {
             <p style={{ color: "var(--muted)", margin: 0, fontSize: "var(--text-sm)", maxWidth: 650 }}>
               {activeConfig.subtitle}
             </p>
+
+            {selectedArchetype && !isRecognized3D && (
+              <div
+                style={{
+                  marginTop: "var(--space-3)",
+                  padding: "var(--space-2) var(--space-3)",
+                  background: "rgba(245, 158, 11, 0.1)",
+                  border: "1px solid rgba(245, 158, 11, 0.3)",
+                  borderRadius: "var(--radius-md)",
+                  fontSize: "var(--text-xs)",
+                  color: "#D97706",
+                }}
+              >
+                Specific 3D interactive model is not available for archetype "<strong>{selectedArchetype}</strong>". Displaying nearest default model ({activeConfig.name}).
+              </div>
+            )}
           </div>
 
           {/* Location & Climate Badge */}

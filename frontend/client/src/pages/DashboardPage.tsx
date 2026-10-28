@@ -14,6 +14,7 @@ import {
   MapPin,
   Loader2,
   ArrowLeft,
+  Download,
 } from "lucide-react";
 import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import L from "leaflet";
@@ -21,6 +22,8 @@ import "leaflet/dist/leaflet.css";
 import { useLocationContext } from "../context/LocationContext";
 import { useClimateZone } from "../theme/ClimateThemeProvider";
 import { mapBackendClassificationToZone } from "../utils/climateMapping";
+import { useToast } from "../components/Toast";
+import { downloadReport } from "../services/api";
 import type { ZoneOrNeutral } from "../types";
 
 const miniPinIcon = L.divIcon({
@@ -58,9 +61,21 @@ const TABS = [
 export default function DashboardPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(TABS[0].id);
+  const [selectedPlanArchetype, setSelectedPlanArchetype] = useState<string | null>(null);
+  const [selectedShelterArchetype, setSelectedShelterArchetype] = useState<string | null>(null);
   const { location, analysis, isLoading, analysisError } = useLocationContext();
   const { setZone } = useClimateZone();
   const reduce = useReducedMotion();
+
+  const handleViewPlan = (archetype: string) => {
+    setSelectedPlanArchetype(archetype);
+    setActiveTab("plan");
+  };
+
+  const handleViewShelter = (archetype: string) => {
+    setSelectedShelterArchetype(archetype);
+    setActiveTab("shelter");
+  };
 
   // Automatically sync theme zone when backend classification is received
   useEffect(() => {
@@ -78,6 +93,45 @@ export default function DashboardPage() {
     : analysis?.location
     ? [analysis.location.latitude, analysis.location.longitude]
     : null;
+
+  const [isDownloading, setIsDownloading] = useState(false);
+  const { showToast } = useToast();
+
+  const handleDownloadReport = async () => {
+    if (!coords) {
+      showToast("Please select a location on the map first.", "error");
+      return;
+    }
+
+    setIsDownloading(true);
+    try {
+      const blob = await downloadReport({
+        latitude: coords[0],
+        longitude: coords[1],
+      });
+
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      const sanitizedName = (location?.name || "ecoshelter")
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "_")
+        .slice(0, 32);
+      a.download = `ecoshelter_report_${sanitizedName}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+
+      showToast("Architectural report downloaded successfully!", "success");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to generate report";
+      showToast(msg, "error");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
 
   return (
     <motion.main
@@ -189,91 +243,133 @@ export default function DashboardPage() {
           </h1>
         </div>
         
-        {/* Backend status badges */}
-        {isLoading && (
-          <motion.div
-            initial={reduce ? {} : { scale: 0.8, opacity: 0 }}
-            animate={reduce ? {} : { scale: 1, opacity: 1 }}
+        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", flexWrap: "wrap" }}>
+          {/* Download Report Button */}
+          <button
+            onClick={handleDownloadReport}
+            disabled={isDownloading || !coords}
             style={{
-              background: "var(--border)",
-              color: "var(--muted)",
-              padding: "var(--space-2) var(--space-4)",
-              borderRadius: "var(--radius-full)",
-              fontSize: "var(--text-sm)",
-              fontWeight: 600,
-              display: "flex",
+              display: "inline-flex",
               alignItems: "center",
               gap: "var(--space-2)",
-            }}
-          >
-            <Loader2 size={14} style={{ animation: "spin 1s linear infinite" }} />
-            Analysing…
-          </motion.div>
-        )}
-        {analysisError && !isLoading && (
-          <motion.div
-            initial={reduce ? {} : { scale: 0.8, opacity: 0 }}
-            animate={reduce ? {} : { scale: 1, opacity: 1 }}
-            style={{
-              background: "rgba(239,68,68,0.1)",
-              color: "#EF4444",
+              background: "rgba(var(--surface-rgb), 0.95)",
+              color: isDownloading || !coords ? "var(--muted)" : "var(--primary)",
+              border: "1.5px solid var(--border)",
               padding: "var(--space-2) var(--space-4)",
-              borderRadius: "var(--radius-full)",
+              borderRadius: "var(--radius-lg)",
               fontSize: "var(--text-sm)",
               fontWeight: 600,
-              border: "1px solid rgba(239,68,68,0.3)",
+              cursor: isDownloading || !coords ? "not-allowed" : "pointer",
+              boxShadow: "0 1px 4px rgba(var(--shadow-color), 0.08)",
+              transition: "all 0.15s ease",
             }}
-          >
-            ⚠ Backend unavailable
-          </motion.div>
-        )}
-        {analysis && !isLoading && (
-          <motion.div
-            initial={reduce ? {} : { scale: 0.8, opacity: 0 }}
-            animate={reduce ? {} : { scale: 1, opacity: 1 }}
-            transition={{ type: "spring", stiffness: 200, damping: 15 }}
-            style={{
-              background: "var(--primary)",
-              color: "var(--bg)",
-              padding: "var(--space-2) var(--space-4)",
-              borderRadius: "var(--radius-full)",
-              fontSize: "var(--text-sm)",
-              fontWeight: 700,
-              boxShadow: "0 4px 12px rgba(var(--primary-rgb), 0.3)",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
+            onMouseEnter={(e) => {
+              if (!isDownloading && coords) {
+                e.currentTarget.style.borderColor = "var(--primary)";
+                e.currentTarget.style.color = "var(--primary)";
+                e.currentTarget.style.background = "rgba(var(--primary-rgb), 0.08)";
+              }
             }}
-          >
-            <span>{analysis.analysis.classification}</span>
-            <span style={{ fontSize: "10px", opacity: 0.8 }}>Flood: {analysis.flood.risk}</span>
-          </motion.div>
-        )}
-        {location && !analysis && !isLoading && !analysisError && (
-          <motion.div
-            initial={reduce ? {} : { scale: 0.8, opacity: 0 }}
-            animate={reduce ? {} : { scale: 1, opacity: 1 }}
-            transition={{ type: "spring", stiffness: 200, damping: 15 }}
-            style={{
-              background: "var(--primary)",
-              color: "var(--bg)",
-              padding: "var(--space-2) var(--space-4)",
-              borderRadius: "var(--radius-full)",
-              fontSize: "var(--text-sm)",
-              fontWeight: 700,
-              boxShadow: "0 4px 12px rgba(var(--primary-rgb), 0.3)"
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = "var(--border)";
+              e.currentTarget.style.color = isDownloading || !coords ? "var(--muted)" : "var(--primary)";
+              e.currentTarget.style.background = "rgba(var(--surface-rgb), 0.95)";
             }}
+            title={coords ? "Download comprehensive architectural assessment PDF report" : "Select a location first"}
           >
-            Zone: Detecting...
-          </motion.div>
-        )}
+            {isDownloading ? (
+              <Loader2 size={16} style={{ animation: "spin 1s linear infinite" }} />
+            ) : (
+              <Download size={16} />
+            )}
+            <span>{isDownloading ? "Generating PDF…" : "Download report"}</span>
+          </button>
+
+          {/* Backend status badges */}
+          {isLoading && (
+            <motion.div
+              initial={reduce ? {} : { scale: 0.8, opacity: 0 }}
+              animate={reduce ? {} : { scale: 1, opacity: 1 }}
+              style={{
+                background: "var(--border)",
+                color: "var(--muted)",
+                padding: "var(--space-2) var(--space-4)",
+                borderRadius: "var(--radius-full)",
+                fontSize: "var(--text-sm)",
+                fontWeight: 600,
+                display: "flex",
+                alignItems: "center",
+                gap: "var(--space-2)",
+              }}
+            >
+              <Loader2 size={14} style={{ animation: "spin 1s linear infinite" }} />
+              Analysing…
+            </motion.div>
+          )}
+          {analysisError && !isLoading && (
+            <motion.div
+              initial={reduce ? {} : { scale: 0.8, opacity: 0 }}
+              animate={reduce ? {} : { scale: 1, opacity: 1 }}
+              style={{
+                background: "rgba(239,68,68,0.1)",
+                color: "#EF4444",
+                padding: "var(--space-2) var(--space-4)",
+                borderRadius: "var(--radius-full)",
+                fontSize: "var(--text-sm)",
+                fontWeight: 600,
+                border: "1px solid rgba(239,68,68,0.3)",
+              }}
+            >
+              ⚠ Backend unavailable
+            </motion.div>
+          )}
+          {analysis && !isLoading && (
+            <motion.div
+              initial={reduce ? {} : { scale: 0.8, opacity: 0 }}
+              animate={reduce ? {} : { scale: 1, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 200, damping: 15 }}
+              style={{
+                background: "var(--primary)",
+                color: "var(--bg)",
+                padding: "var(--space-2) var(--space-4)",
+                borderRadius: "var(--radius-full)",
+                fontSize: "var(--text-sm)",
+                fontWeight: 700,
+                boxShadow: "0 4px 12px rgba(var(--primary-rgb), 0.3)",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
+              <span>{analysis.analysis.classification}</span>
+              <span style={{ fontSize: "10px", opacity: 0.8 }}>Flood: {analysis.flood.risk}</span>
+            </motion.div>
+          )}
+          {location && !analysis && !isLoading && !analysisError && (
+            <motion.div
+              initial={reduce ? {} : { scale: 0.8, opacity: 0 }}
+              animate={reduce ? {} : { scale: 1, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 200, damping: 15 }}
+              style={{
+                background: "var(--primary)",
+                color: "var(--bg)",
+                padding: "var(--space-2) var(--space-4)",
+                borderRadius: "var(--radius-full)",
+                fontSize: "var(--text-sm)",
+                fontWeight: 700,
+                boxShadow: "0 4px 12px rgba(var(--primary-rgb), 0.3)"
+              }}
+            >
+              Zone: Detecting...
+            </motion.div>
+          )}
+        </div>
       </div>
 
       {/* RECOMMENDED VERNACULAR DESIGNS SECTION */}
       <RecommendedDesignsSection
-        analysis={analysis}
-        isLoading={isLoading}
-        analysisError={analysisError}
+        onViewPlan={handleViewPlan}
+        onViewShelter={handleViewShelter}
       />
 
       {/* DESKTOP TAB BAR */}
@@ -428,10 +524,10 @@ export default function DashboardPage() {
           <DesignsTab />
         </div>
         <div style={{ display: activeTab === "plan" ? "block" : "none" }}>
-          <PlanTab />
+          <PlanTab selectedArchetype={selectedPlanArchetype} />
         </div>
         <div style={{ display: activeTab === "shelter" ? "block" : "none" }}>
-          <ShelterTab />
+          <ShelterTab selectedArchetype={selectedShelterArchetype} />
         </div>
       </div>
     </motion.main>

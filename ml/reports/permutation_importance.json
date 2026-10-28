@@ -1,0 +1,246 @@
+{
+  "estimated_cost_level": {
+    "importance_mean": 1.09727,
+    "importance_std": 0.01508
+  },
+  "hot_season_humidity": {
+    "importance_mean": 0.20171,
+    "importance_std": 0.00557
+  },
+  "annual_rain": {
+    "importance_mean": 0.17271,
+    "importance_std": 0.00237
+  },
+  "days_below_5": {
+    "importance_mean": 0.08952,
+    "importance_std": 0.0035
+  },
+  "coldest_month_min": {
+    "importance_mean": 0.0874,
+    "importance_std": 0.00624
+  },
+  "wind_mean": {
+    "importance_mean": 0.06971,
+    "importance_std": 0.00173
+  },
+  "has_courtyard": {
+    "importance_mean": 0.06483,
+    "importance_std": 0.00339
+  },
+  "hottest_month_max": {
+    "importance_mean": 0.027,
+    "importance_std": 0.00189
+  },
+  "shading_depth_low": {
+    "importance_mean": 0.02511,
+    "importance_std": 0.0009
+  },
+  "insulation_low": {
+    "importance_mean": 0.01902,
+    "importance_std": 0.00127
+  },
+  "window_to_wall_ratio": {
+    "importance_mean": 0.01709,
+    "importance_std": 0.0006
+  },
+  "roof_type_hipped_stilted": {
+    "importance_mean": 0.01274,
+    "importance_std": 0.00071
+  },
+  "plan_archetype_WARM_HUMID": {
+    "importance_mean": 0.01226,
+    "importance_std": 0.00067
+  },
+  "thermal_mass_high": {
+    "importance_mean": 0.0114,
+    "importance_std": 0.00048
+  },
+  "thermal_mass_low": {
+    "importance_mean": 0.0112,
+    "importance_std": 0.00053
+  },
+  "roof_type_steep_gable": {
+    "importance_mean": 0.00926,
+    "importance_std": 0.00025
+  },
+  "insulation_medium": {
+    "importance_mean": 0.00559,
+    "importance_std": 0.00067
+  },
+  "thermal_mass_medium": {
+    "importance_mean": 0.0051,
+    "importance_std": 0.00032
+  },
+  "raised_floor": {
+    "importance_mean": 0.00479,
+    "importance_std": 0.00037
+  },
+  "insulation_high": {
+    "importance_mean": 0.00449,
+    "importance_std": 0.00033
+  },
+  "plan_archetype_HOT_DRY": {
+    "importance_mean": 0.00428,
+    "importance_std": 0.0002
+  },
+  "days_above_40": {
+    "importance_mean": 0.00403,
+    "importance_std": 0.00031
+  },
+  "ventilation_cross": {
+    "importance_mean": 0.00398,
+    "importance_std": 0.00027
+  },
+  "wall_material_reinforced_concrete_earth_berm": {
+    "importance_mean": 0.00236,
+    "importance_std": 0.00011
+  },
+  "ventilation_stack": {
+    "importance_mean": 0.00236,
+    "importance_std": 0.00015
+  },
+  "wall_material_woven_bamboo": {
+    "importance_mean": 0.00195,
+    "importance_std": 0.00011
+  },
+  "wall_material_dry_rubble_stone_with_timber_floors": {
+    "importance_mean": 0.00175,
+    "importance_std": 2e-05
+  },
+  "plan_archetype_COLD": {
+    "importance_mean": 0.00175,
+    "importance_std": 0.00011
+  },
+  "coldest_month_mean": {
+    "importance_mean": 0.00133,
+    "importance_std": 0.00016
+  },
+  "roof_type_parapet_courtyard": {
+    "importance_mean": 0.00131,
+    "importance_std": 6e-05
+  },
+  "wall_material_insulated_render_on_AAC_block": {
+    "importance_mean": 0.00122,
+    "importance_std": 5e-05
+  },
+  "latitude": {
+    "importance_mean": 0.00116,
+    "importance_std": 0.00025
+  },
+  "roof_type_hybrid_composite": {
+    "importance_mean": 0.00096,
+    "importance_std": 4e-05
+  },
+  "shading_depth_high": {
+    "importance_mean": 0.00093,
+    "importance_std": 0.00013
+  },
+  "plan_archetype_COMPOSITE": {
+    "importance_mean": 0.00085,
+    "importance_std": 0.00012
+  },
+  "wall_material_timber_slatted": {
+    "importance_mean": 0.00079,
+    "importance_std": 6e-05
+  },
+  "wall_material_structural_insulated_panels": {
+    "importance_mean": 0.00065,
+    "importance_std": 2e-05
+  },
+  "wall_material_galvanised_steel_louvre_panels": {
+    "importance_mean": 0.0006,
+    "importance_std": 4e-05
+  },
+  "wall_material_adobe_mud_brick": {
+    "importance_mean": 0.00052,
+    "importance_std": 4e-05
+  },
+  "wall_material_light_brick_cavity": {
+    "importance_mean": 0.00051,
+    "importance_std": 1e-05
+  },
+  "shading_depth_medium": {
+    "importance_mean": 0.00049,
+    "importance_std": 3e-05
+  },
+  "wall_material_laterite_stone_with_timber": {
+    "importance_mean": 0.00042,
+    "importance_std": 1e-05
+  },
+  "roof_type_monopitch_solar": {
+    "importance_mean": 0.00041,
+    "importance_std": 4e-05
+  },
+  "ventilation_night": {
+    "importance_mean": 0.00041,
+    "importance_std": 1e-05
+  },
+  "wall_material_sandstone_masonry": {
+    "importance_mean": 0.00034,
+    "importance_std": 2e-05
+  },
+  "plan_archetype_TEMPERATE": {
+    "importance_mean": 0.00031,
+    "importance_std": 4e-05
+  },
+  "wall_material_mud_ferro_cement": {
+    "importance_mean": 0.00029,
+    "importance_std": 2e-05
+  },
+  "wall_material_lime_mortar_brick_with_Burma_teak": {
+    "importance_mean": 0.00025,
+    "importance_std": 0.00011
+  },
+  "wall_material_rammed_earth_tyres": {
+    "importance_mean": 0.00025,
+    "importance_std": 4e-05
+  },
+  "ventilation_mixed": {
+    "importance_mean": 0.00024,
+    "importance_std": 8e-05
+  },
+  "wall_material_rammed_earth": {
+    "importance_mean": 0.00022,
+    "importance_std": 2e-05
+  },
+  "wall_material_solid_timber_log": {
+    "importance_mean": 0.00019,
+    "importance_std": 1e-05
+  },
+  "wall_material_compressed_earth_block": {
+    "importance_mean": 0.00018,
+    "importance_std": 1e-05
+  },
+  "wall_material_timber_frame_clapboard": {
+    "importance_mean": 0.00016,
+    "importance_std": 1e-05
+  },
+  "wall_material_brick_with_stone_jaali": {
+    "importance_mean": 0.00013,
+    "importance_std": 2e-05
+  },
+  "solar_mean": {
+    "importance_mean": 0.00012,
+    "importance_std": 3e-05
+  },
+  "wall_material_insulated_cavity_brick": {
+    "importance_mean": 0.00012,
+    "importance_std": 1e-05
+  },
+  "wall_material_timber_panelled": {
+    "importance_mean": 0.0001,
+    "importance_std": 1e-05
+  },
+  "wall_material_fly_ash_brick": {
+    "importance_mean": 8e-05,
+    "importance_std": 0.0
+  },
+  "wall_material_concrete_masonry_with_glazing": {
+    "importance_mean": 4e-05,
+    "importance_std": 1e-05
+  },
+  "wall_material_cross_laminated_timber": {
+    "importance_mean": 4e-05,
+    "importance_std": 1e-05
+  }
+}

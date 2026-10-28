@@ -12,16 +12,29 @@ import { getPlanForZone } from "../../mock/planData";
 import { exportDxfFile } from "../../utils/dxfExport";
 import { getSpec, DesignSpecResponse } from "../../services/api";
 
-export default function PlanTab() {
+export interface PlanTabProps {
+  selectedArchetype?: string | null;
+}
+
+export default function PlanTab({ selectedArchetype }: PlanTabProps = {}) {
   const reduce = useReducedMotion();
   const { showToast } = useToast();
   const { analysis, location } = useLocationContext();
   const { zone: themeZone } = useClimateZone();
 
-  // Resolve active climate zone from backend classification, fallback to themeZone, fallback to COMPOSITE
+  // Resolve active climate zone: prefer selectedArchetype if passed from 2D button,
+  // fallback to backend classification, fallback to themeZone, fallback to COMPOSITE
   const backendZone = mapBackendClassificationToZone(analysis?.analysis?.classification);
-  const activeZone = backendZone ?? (themeZone !== "NEUTRAL" ? themeZone : "COMPOSITE");
+  const activeZone = (
+    selectedArchetype
+      ? selectedArchetype.toUpperCase().replace(/[- ]/g, "_")
+      : (backendZone ?? (themeZone !== "NEUTRAL" ? themeZone : "COMPOSITE"))
+  );
+
   const fallbackSpec = getPlanForZone(activeZone);
+
+  // Check if archetype is recognized in standard plan sets
+  const isRecognizedArchetype = ["HOT_DRY", "WARM_HUMID", "COLD", "COMPOSITE", "TEMPERATE", "NEUTRAL"].includes(activeZone);
 
   const [liveSpec, setLiveSpec] = useState<DesignSpecResponse | null>(null);
   const [isLoadingSpec, setIsLoadingSpec] = useState(false);
@@ -258,6 +271,29 @@ export default function PlanTab() {
             </button>
           </div>
         </div>
+
+        {/* Archetype notice if unknown */}
+        {selectedArchetype && !isRecognizedArchetype && (
+          <div
+            style={{
+              padding: "var(--space-3) var(--space-4)",
+              background: "rgba(245, 158, 11, 0.1)",
+              border: "1px solid rgba(245, 158, 11, 0.3)",
+              borderRadius: "var(--radius-lg)",
+              marginBottom: "var(--space-4)",
+              fontSize: "var(--text-sm)",
+              color: "#D97706",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+            }}
+          >
+            <ShieldAlert size={16} />
+            <span>
+              Specific 2D architectural drawing is not available for archetype "<strong>{selectedArchetype}</strong>". Displaying the standard baseline layout.
+            </span>
+          </div>
+        )}
 
         {/* The SVG Container */}
         <div

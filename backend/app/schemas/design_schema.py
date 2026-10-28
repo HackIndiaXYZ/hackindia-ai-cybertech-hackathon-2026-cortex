@@ -5,8 +5,10 @@ Matches frontend/client/src/mock/designs.ts contracts (DesignScores, DesignModel
 while providing MCDM validation and metadata.
 """
 
-from typing import Any, Dict, List, Optional, Union
-from pydantic import BaseModel, Field, model_validator
+from typing import Any, Dict, List, Literal, Optional, Union
+from pydantic import BaseModel, Field, field_validator, model_validator
+
+from app.schemas.analysis_schema import LocationInfo
 
 
 class DesignScores(BaseModel):
@@ -202,3 +204,170 @@ class DesignSpecResponse(BaseModel):
         description="Guideline baseline provenance.",
     )
     verified: bool = Field(default=False)
+
+
+# ===========================================================================
+# Design Catalogue Schema — backend/app/data/design_catalogue.json
+# Distinct from the MCDM ranking schemas above.
+# Used by load_catalogue() in backend/app/analysis/design_catalogue.py.
+# ===========================================================================
+
+# plan_archetype must match:
+#   PlanZoneKey  in frontend/client/src/mock/planData.ts
+#   ActiveClimateArchetype in frontend/client/src/viz/climateShelterData.ts
+PlanArchetype = Literal[
+    "HOT_DRY",
+    "WARM_HUMID",
+    "COLD",
+    "COMPOSITE",
+    "TEMPERATE",
+    "NEUTRAL",
+]
+
+ShadingDepth = Literal["low", "medium", "high"]
+VentilationStrategy = Literal["cross", "night", "stack", "mixed"]
+MassLevel = Literal["low", "medium", "high"]
+
+
+class CatalogueDesign(BaseModel):
+    """
+    A single vernacular / bioclimatic shelter design in the catalogue
+    (backend/app/data/design_catalogue.json).
+
+    Fields are intentionally simple scalars so the ML feature extractor can
+    convert them to numeric vectors without parsing complex nested objects.
+
+    Constraints:
+    - plan_archetype must be a key used by planData.ts (PlanZoneKey) and
+      climateShelterData.ts (ActiveClimateArchetype) so that 2D and 3D
+      visualisation buttons keep working.
+    - verified must always be False — parameters are research estimates.
+    """
+
+    id: str = Field(..., description="Unique slug identifier, e.g. 'courtyard-haveli'.")
+    name: str = Field(..., description="Human-readable display name. Must be unique in the catalogue.")
+
+    # --- Envelope -----------------------------------------------------------
+    wall_material: str = Field(..., description="Primary wall material slug.")
+    roof_type: Literal[
+        "steep_gable",
+        "parapet_courtyard",
+        "hipped_stilted",
+        "monopitch_solar",
+        "hybrid_composite",
+    ] = Field(..., description="Roof typology key used by 3D ClimateShelterConfig.")
+    window_to_wall_ratio: float = Field(
+        ..., ge=0.01, le=0.90,
+        description="Fraction of façade area that is glazed (0.01–0.90).",
+    )
+
+    # --- Passive strategies -------------------------------------------------
+    shading_depth: ShadingDepth = Field(..., description="Depth of external solar shading.")
+    ventilation: VentilationStrategy = Field(..., description="Primary ventilation strategy.")
+    thermal_mass: MassLevel = Field(..., description="Thermal mass performance level.")
+    insulation: MassLevel = Field(..., description="Insulation performance level.")
+    has_courtyard: bool = Field(..., description="True if typology includes a central open courtyard.")
+    raised_floor: bool = Field(..., description="True if floor is elevated on stilts or plinth > 0.6 m.")
+
+    # --- Frontend integration -----------------------------------------------
+    plan_archetype: PlanArchetype = Field(
+        ...,
+        description=(
+            "Zone key for 2-D plan generator (planData.ts) and 3-D shelter engine "
+            "(climateShelterData.ts). Allowed: HOT_DRY | WARM_HUMID | COLD | "
+            "COMPOSITE | TEMPERATE | NEUTRAL."
+        ),
+    )
+
+    # --- Cost & provenance --------------------------------------------------
+    estimated_cost_level: int = Field(..., ge=1, le=5, description="Relative cost (1=very low, 5=very high).")
+    source: str = Field(..., description="Bibliographic reference(s) for design parameters.")
+    verified: bool = Field(
+        default=False,
+        description="Always False — parameters are research estimates, not measured field data.",
+    )
+
+    @field_validator("verified")  # type: ignore[misc]
+    @classmethod
+    def must_be_false(cls, v: bool) -> bool:
+        """Enforce honesty: no entry may be marked verified=true."""
+        if v is True:
+            raise ValueError(
+                "verified must be False — catalogue values are research estimates. "
+                "Do not set verified=True without empirical measurement data."
+            )
+        return v
+
+
+# ===========================================================================
+# ML Design Recommendation Schemas (/api/designs/recommend)
+# ===========================================================================
+
+
+class MLRecommendedDesignScores(BaseModel):
+    """Predicted criteria scores (0-100) from the ML surrogate model."""
+
+    comfort: float = Field(..., ge=0.0, le=100.0, description="Predicted thermal comfort score.")
+    cost: float = Field(..., ge=0.0, le=100.0, description="Predicted cost efficiency score (100 = most affordable).")
+    safety: float = Field(..., ge=0.0, le=100.0, description="Predicted structural safety and resilience score.")
+    sustainability: float = Field(..., ge=0.0, le=100.0, description="Predicted sustainability and low-carbon score.")
+
+
+class MLRecommendedDesign(BaseModel):
+    """A ranked design recommendation produced by the ML surrogate model."""
+
+    id: str = Field(..., description="Unique design slug identifier.")
+    name: str = Field(..., description="Descriptive architectural design title.")
+    plan_archetype: str = Field(..., description="Zone archetype for 2D/3D visualization engines.")
+    scores: MLRecommendedDesignScores = Field(..., description="Predicted criterion-level scores (0-100).")
+    total: float = Field(..., ge=0.0, le=100.0, description="MCDM weighted total score.")
+    reasons: List[str] = Field(default_factory=list, description="Factual bioclimatic design rationale bullet points.")
+    rank: int = Field(..., ge=1, description="Recommendation rank position (1 = best fit).")
+
+
+class MLModelInfo(BaseModel):
+    """Metadata regarding the ML surrogate model used for inference."""
+
+    name: str = Field(default="RandomForestRegressor", description="Model architecture title.")
+    version: str = Field(default="1.0.0", description="Model version tag.")
+    source: str = Field(default="ml", description="Inference engine source descriptor.")
+
+
+class MLDesignRecommendRequest(BaseModel):
+    """Request payload for ML design recommendation."""
+
+    latitude: float = Field(
+        ...,
+        ge=-90.0,
+        le=90.0,
+        description="Site latitude in decimal degrees (-90.0 to 90.0).",
+        examples=[26.9124],
+    )
+    longitude: float = Field(
+        ...,
+        ge=-180.0,
+        le=180.0,
+        description="Site longitude in decimal degrees (-180.0 to 180.0).",
+        examples=[75.7873],
+    )
+    weights: Optional[WeightsInput] = Field(
+        default=None,
+        description="Priority weights. Defaults to Balanced preset (25% each) if omitted.",
+    )
+    top_n: int = Field(
+        default=3,
+        ge=1,
+        le=25,
+        description="Number of top designs to return (default: 3, max: 25).",
+    )
+
+
+class MLDesignRecommendResponse(BaseModel):
+    """Full ML design recommendation response matching API contract."""
+
+    location: LocationInfo = Field(..., description="Geocoded location information.")
+    features_used: Dict[str, float] = Field(..., description="Validated climate feature values utilized for inference.")
+    designs: List[MLRecommendedDesign] = Field(..., description="Ranked list of recommended designs.")
+    weights_used: Dict[str, float] = Field(..., description="Normalized weights applied across the 4 criteria.")
+    model_info: MLModelInfo = Field(..., description="Active ML surrogate model identity.")
+

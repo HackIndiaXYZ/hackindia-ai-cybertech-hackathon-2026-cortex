@@ -1,0 +1,112 @@
+{
+  "source": "NBC 2016 Part 8 (Climatic Zones of India), ECBC 2017 & Indian Meteorological Department (IMD) Normals",
+  "verified": false,
+  "description": "Realistic bioclimatic ranges and reference stations across India for generating diverse design recommender training data.",
+  "zones": {
+    "HOT_DRY": {
+      "description": "Arid and semi-arid desert and interior plains (e.g., Western Rajasthan, North Gujarat). High solar insolation, low humidity, extreme diurnal range.",
+      "latitude_range": [23.0, 30.0],
+      "hottest_month_max": [38.0, 48.0],
+      "coldest_month_min": [5.0, 14.0],
+      "coldest_month_mean": [12.0, 19.0],
+      "hot_season_humidity": [15.0, 40.0],
+      "annual_rain": [120.0, 550.0],
+      "wind_mean": [12.0, 26.0],
+      "solar_mean": [22.0, 30.0],
+      "days_above_40": [25.0, 85.0],
+      "days_below_5": [0.0, 6.0]
+    },
+    "WARM_HUMID": {
+      "description": "Coastal belts and northeastern river valleys (e.g., Kerala, Konkan, Tamil Nadu coast, Bengal delta, Assam). High humidity, heavy monsoon precipitation.",
+      "latitude_range": [8.0, 26.0],
+      "hottest_month_max": [30.0, 37.0],
+      "coldest_month_min": [19.0, 26.0],
+      "coldest_month_mean": [22.0, 28.0],
+      "hot_season_humidity": [68.0, 92.0],
+      "annual_rain": [1300.0, 3600.0],
+      "wind_mean": [14.0, 30.0],
+      "solar_mean": [16.0, 23.0],
+      "days_above_40": [0.0, 6.0],
+      "days_below_5": [0.0, 0.0]
+    },
+    "COMPOSITE": {
+      "description": "Indo-Gangetic plains and central peninsular plateau (e.g., Delhi, UP, MP, Punjab, Bihar). Extreme hot dry summers, monsoon humidity, chilly dry winters.",
+      "latitude_range": [18.0, 31.0],
+      "hottest_month_max": [39.0, 46.0],
+      "coldest_month_min": [4.0, 11.0],
+      "coldest_month_mean": [11.0, 18.0],
+      "hot_season_humidity": [35.0, 65.0],
+      "annual_rain": [600.0, 1150.0],
+      "wind_mean": [10.0, 22.0],
+      "solar_mean": [18.0, 26.0],
+      "days_above_40": [18.0, 60.0],
+      "days_below_5": [2.0, 15.0]
+    },
+    "COLD": {
+      "description": "Western Himalayas, Ladakh, and high-altitude northeastern mountains. Sub-zero winters, heavy snow or cold desert conditions.",
+      "latitude_range": [28.0, 36.0],
+      "hottest_month_max": [16.0, 28.0],
+      "coldest_month_min": [-22.0, 2.0],
+      "coldest_month_mean": [-12.0, 8.0],
+      "hot_season_humidity": [35.0, 70.0],
+      "annual_rain": [150.0, 1300.0],
+      "wind_mean": [15.0, 32.0],
+      "solar_mean": [14.0, 24.0],
+      "days_above_40": [0.0, 0.0],
+      "days_below_5": [30.0, 160.0]
+    },
+    "TEMPERATE": {
+      "description": "High-elevation south-central plateaus (e.g., Bengaluru, Pune, Nilgiris, Shillong). Mild year-round temperatures, moderate humidity, comfortable climate.",
+      "latitude_range": [11.0, 20.0],
+      "hottest_month_max": [29.0, 35.0],
+      "coldest_month_min": [12.0, 18.0],
+      "coldest_month_mean": [18.0, 24.0],
+      "hot_season_humidity": [45.0, 72.0],
+      "annual_rain": [750.0, 1350.0],
+      "wind_mean": [12.0, 24.0],
+      "solar_mean": [19.0, 26.0],
+      "days_above_40": [0.0, 3.0],
+      "days_below_5": [0.0, 0.0]
+    }
+  },
+  "reference_cities": [
+    {"name": "Jodhpur", "zone": "HOT_DRY", "latitude": 26.29, "longitude": 73.02, "hottest_month_max": 42.5, "coldest_month_min": 9.2, "coldest_month_mean": 16.5, "hot_season_humidity": 26.0, "annual_rain": 340.0, "wind_mean": 18.5, "solar_mean": 25.8, "days_above_40": 46.0, "days_below_5": 1.2},
+    {"name": "Jaisalmer", "zone": "HOT_DRY", "latitude": 26.91, "longitude": 70.91, "hottest_month_max": 44.8, "coldest_month_min": 7.8, "coldest_month_mean": 15.2, "hot_season_humidity": 20.0, "annual_rain": 180.0, "wind_mean": 22.0, "solar_mean": 27.2, "days_above_40": 58.0, "days_below_5": 2.5},
+    {"name": "Bikaner", "zone": "HOT_DRY", "latitude": 28.02, "longitude": 73.31, "hottest_month_max": 43.6, "coldest_month_min": 6.5, "coldest_month_mean": 14.4, "hot_season_humidity": 24.0, "annual_rain": 240.0, "wind_mean": 20.1, "solar_mean": 26.4, "days_above_40": 52.0, "days_below_5": 4.1},
+    {"name": "Barmer", "zone": "HOT_DRY", "latitude": 25.75, "longitude": 71.38, "hottest_month_max": 44.2, "coldest_month_min": 9.0, "coldest_month_mean": 16.8, "hot_season_humidity": 28.0, "annual_rain": 260.0, "wind_mean": 19.4, "solar_mean": 26.8, "days_above_40": 54.0, "days_below_5": 1.0},
+    {"name": "Bhuj", "zone": "HOT_DRY", "latitude": 23.25, "longitude": 69.67, "hottest_month_max": 40.2, "coldest_month_min": 11.5, "coldest_month_mean": 18.6, "hot_season_humidity": 38.0, "annual_rain": 380.0, "wind_mean": 21.0, "solar_mean": 24.5, "days_above_40": 32.0, "days_below_5": 0.0},
+    {"name": "Chennai", "zone": "WARM_HUMID", "latitude": 13.08, "longitude": 80.27, "hottest_month_max": 37.5, "coldest_month_min": 21.2, "coldest_month_mean": 25.0, "hot_season_humidity": 74.0, "annual_rain": 1400.0, "wind_mean": 19.5, "solar_mean": 21.4, "days_above_40": 4.0, "days_below_5": 0.0},
+    {"name": "Kochi", "zone": "WARM_HUMID", "latitude": 9.93, "longitude": 76.26, "hottest_month_max": 33.2, "coldest_month_min": 23.4, "coldest_month_mean": 27.2, "hot_season_humidity": 84.0, "annual_rain": 3050.0, "wind_mean": 16.8, "solar_mean": 19.6, "days_above_40": 0.0, "days_below_5": 0.0},
+    {"name": "Mumbai", "zone": "WARM_HUMID", "latitude": 19.07, "longitude": 72.87, "hottest_month_max": 34.6, "coldest_month_min": 17.8, "coldest_month_mean": 24.0, "hot_season_humidity": 78.0, "annual_rain": 2400.0, "wind_mean": 21.5, "solar_mean": 20.8, "days_above_40": 1.0, "days_below_5": 0.0},
+    {"name": "Kolkata", "zone": "WARM_HUMID", "latitude": 22.57, "longitude": 88.36, "hottest_month_max": 36.4, "coldest_month_min": 13.5, "coldest_month_mean": 20.4, "hot_season_humidity": 76.0, "annual_rain": 1800.0, "wind_mean": 15.2, "solar_mean": 19.8, "days_above_40": 3.0, "days_below_5": 0.0},
+    {"name": "Panaji", "zone": "WARM_HUMID", "latitude": 15.49, "longitude": 73.82, "hottest_month_max": 33.5, "coldest_month_min": 20.5, "coldest_month_mean": 25.8, "hot_season_humidity": 80.0, "annual_rain": 2900.0, "wind_mean": 18.2, "solar_mean": 20.2, "days_above_40": 0.0, "days_below_5": 0.0},
+    {"name": "Guwahati", "zone": "WARM_HUMID", "latitude": 26.18, "longitude": 91.74, "hottest_month_max": 33.0, "coldest_month_min": 10.8, "coldest_month_mean": 17.6, "hot_season_humidity": 82.0, "annual_rain": 1750.0, "wind_mean": 11.5, "solar_mean": 17.5, "days_above_40": 0.0, "days_below_5": 0.0},
+    {"name": "New Delhi", "zone": "COMPOSITE", "latitude": 28.61, "longitude": 77.20, "hottest_month_max": 42.2, "coldest_month_min": 6.8, "coldest_month_mean": 13.8, "hot_season_humidity": 45.0, "annual_rain": 780.0, "wind_mean": 16.4, "solar_mean": 22.6, "days_above_40": 38.0, "days_below_5": 6.5},
+    {"name": "Lucknow", "zone": "COMPOSITE", "latitude": 26.85, "longitude": 80.94, "hottest_month_max": 41.5, "coldest_month_min": 7.5, "coldest_month_mean": 14.5, "hot_season_humidity": 50.0, "annual_rain": 920.0, "wind_mean": 14.2, "solar_mean": 21.8, "days_above_40": 32.0, "days_below_5": 4.8},
+    {"name": "Jaipur", "zone": "COMPOSITE", "latitude": 26.92, "longitude": 75.82, "hottest_month_max": 41.8, "coldest_month_min": 8.0, "coldest_month_mean": 15.0, "hot_season_humidity": 38.0, "annual_rain": 620.0, "wind_mean": 17.0, "solar_mean": 24.2, "days_above_40": 34.0, "days_below_5": 3.2},
+    {"name": "Nagpur", "zone": "COMPOSITE", "latitude": 21.14, "longitude": 79.08, "hottest_month_max": 43.8, "coldest_month_min": 12.0, "coldest_month_mean": 20.2, "hot_season_humidity": 40.0, "annual_rain": 1100.0, "wind_mean": 15.8, "solar_mean": 23.5, "days_above_40": 42.0, "days_below_5": 0.5},
+    {"name": "Hyderabad", "zone": "COMPOSITE", "latitude": 17.38, "longitude": 78.48, "hottest_month_max": 40.5, "coldest_month_min": 14.2, "coldest_month_mean": 21.5, "hot_season_humidity": 48.0, "annual_rain": 840.0, "wind_mean": 16.2, "solar_mean": 23.0, "days_above_40": 22.0, "days_below_5": 0.0},
+    {"name": "Bhopal", "zone": "COMPOSITE", "latitude": 23.25, "longitude": 77.41, "hottest_month_max": 41.2, "coldest_month_min": 10.0, "coldest_month_mean": 17.8, "hot_season_humidity": 42.0, "annual_rain": 1050.0, "wind_mean": 15.0, "solar_mean": 23.2, "days_above_40": 30.0, "days_below_5": 1.2},
+    {"name": "Leh", "zone": "COLD", "latitude": 34.15, "longitude": 77.57, "hottest_month_max": 25.2, "coldest_month_min": -15.4, "coldest_month_mean": -6.5, "hot_season_humidity": 38.0, "annual_rain": 120.0, "wind_mean": 18.2, "solar_mean": 23.8, "days_above_40": 0.0, "days_below_5": 145.0},
+    {"name": "Srinagar", "zone": "COLD", "latitude": 34.08, "longitude": 74.79, "hottest_month_max": 30.5, "coldest_month_min": -3.2, "coldest_month_mean": 2.2, "hot_season_humidity": 62.0, "annual_rain": 720.0, "wind_mean": 13.5, "solar_mean": 18.5, "days_above_40": 0.0, "days_below_5": 62.0},
+    {"name": "Shimla", "zone": "COLD", "latitude": 31.10, "longitude": 77.17, "hottest_month_max": 24.8, "coldest_month_min": 1.5, "coldest_month_mean": 6.0, "hot_season_humidity": 66.0, "annual_rain": 1350.0, "wind_mean": 16.0, "solar_mean": 18.0, "days_above_40": 0.0, "days_below_5": 42.0},
+    {"name": "Manali", "zone": "COLD", "latitude": 32.24, "longitude": 77.19, "hottest_month_max": 25.0, "coldest_month_min": -4.0, "coldest_month_mean": 1.8, "hot_season_humidity": 68.0, "annual_rain": 1450.0, "wind_mean": 15.5, "solar_mean": 17.8, "days_above_40": 0.0, "days_below_5": 78.0},
+    {"name": "Kargil", "zone": "COLD", "latitude": 34.55, "longitude": 76.13, "hottest_month_max": 28.5, "coldest_month_min": -18.2, "coldest_month_mean": -8.5, "hot_season_humidity": 34.0, "annual_rain": 260.0, "wind_mean": 20.0, "solar_mean": 22.5, "days_above_40": 0.0, "days_below_5": 135.0},
+    {"name": "Bengaluru", "zone": "TEMPERATE", "latitude": 12.97, "longitude": 77.59, "hottest_month_max": 34.2, "coldest_month_min": 15.8, "coldest_month_mean": 21.0, "hot_season_humidity": 58.0, "annual_rain": 980.0, "wind_mean": 17.5, "solar_mean": 22.5, "days_above_40": 0.0, "days_below_5": 0.0},
+    {"name": "Pune", "zone": "TEMPERATE", "latitude": 18.52, "longitude": 73.85, "hottest_month_max": 37.5, "coldest_month_min": 12.2, "coldest_month_mean": 20.5, "hot_season_humidity": 52.0, "annual_rain": 760.0, "wind_mean": 18.0, "solar_mean": 23.4, "days_above_40": 2.0, "days_below_5": 0.0},
+    {"name": "Mysore", "zone": "TEMPERATE", "latitude": 12.30, "longitude": 76.65, "hottest_month_max": 34.5, "coldest_month_min": 16.5, "coldest_month_mean": 21.8, "hot_season_humidity": 62.0, "annual_rain": 850.0, "wind_mean": 16.0, "solar_mean": 22.0, "days_above_40": 0.0, "days_below_5": 0.0},
+    {"name": "Coimbatore", "zone": "TEMPERATE", "latitude": 11.01, "longitude": 76.96, "hottest_month_max": 35.8, "coldest_month_min": 19.5, "coldest_month_mean": 24.2, "hot_season_humidity": 60.0, "annual_rain": 700.0, "wind_mean": 19.2, "solar_mean": 22.8, "days_above_40": 0.0, "days_below_5": 0.0}
+  ],
+  "sampling_strategy": {
+    "target_total_climate_points": 420,
+    "stratified_distribution": {
+      "HOT_DRY": 84,
+      "WARM_HUMID": 84,
+      "COMPOSITE": 84,
+      "COLD": 84,
+      "TEMPERATE": 84
+    },
+    "default_gaussian_noise_std": 1.5,
+    "random_seed": 42
+  }
+}

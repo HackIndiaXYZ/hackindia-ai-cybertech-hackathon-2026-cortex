@@ -114,4 +114,19 @@ export async function getSpec(
   return analyzeService.getSpec(zone, design, plot, signal);
 }
 
+/**
+ * Generate and download bioclimatic architectural assessment PDF report.
+ */
+export async function downloadReport(
+  params: {
+    latitude: number;
+    longitude: number;
+    weights?: Record<string, number>;
+    plot_size?: { width?: number; length?: number; w?: number; l?: number };
+  },
+  signal?: AbortSignal
+): Promise<Blob> {
+  return analyzeService.downloadReport(params, signal);
+}
+
 export { analyzeService };

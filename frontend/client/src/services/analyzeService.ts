@@ -80,6 +80,64 @@ export interface ThermalRiskResponse {
   verified?: boolean;
 }
 
+export interface MLDesignPrediction {
+  id: string;
+  name: string;
+  origin_zone: string;
+  predicted_score: number;
+  match_level: string;
+  confidence: number;
+  strengths: string[];
+  why_recommended: string;
+  rank: number;
+}
+
+export interface MLRecommendResponse {
+  predictions: MLDesignPrediction[];
+  input_climate_features: Record<string, number>;
+  model_metadata: {
+    model_type: string;
+    model_version: string;
+    test_r2: number;
+    test_mae: number;
+    source: string;
+    verified: boolean;
+    honesty_notice: string;
+  };
+  source: string;
+  verified: boolean;
+  disclaimer: string;
+}
+
+export interface MLDesignScores {
+  comfort: number;
+  cost: number;
+  safety: number;
+  sustainability: number;
+}
+
+export interface MLRecommendedDesign {
+  id: string;
+  name: string;
+  plan_archetype: string;
+  scores: MLDesignScores;
+  total: number;
+  reasons: string[];
+  rank: number;
+}
+
+export interface MLDesignRecommendResponse {
+  location: LocationInfo;
+  features_used: Record<string, number>;
+  designs: MLRecommendedDesign[];
+  weights_used: Record<string, number>;
+  model_info: {
+    name: string;
+    version: string;
+    source: string;
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Design Ranking Types (matches frontend/client/src/mock/designs.ts contract)
 // ---------------------------------------------------------------------------
@@ -224,9 +282,9 @@ export interface ZoneApiResponse {
 }
 
 const API_BASE =
-  import.meta.env.VITE_API_URL ??
-  import.meta.env.VITE_API_BASE_URL ??
-  (import.meta.env.PROD ? "" : "http://localhost:8000");
+  (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_URL) ??
+  (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_BASE_URL) ??
+  (typeof import.meta !== "undefined" && import.meta.env?.PROD ? "" : "http://localhost:8000");
 
 export const analyzeService = {
   /**
@@ -467,5 +525,106 @@ export const analyzeService = {
       signal
     );
   },
+
+  /**
+   * Calls POST /api/recommend/ml to get ML-predicted vernacular design recommendations.
+   * Falls back gracefully — callers should catch and use static zone data on failure.
+   */
+  async getMLRecommendations(
+    latitude: number,
+    longitude: number,
+    topN: number = 3,
+    signal?: AbortSignal
+  ): Promise<MLRecommendResponse> {
+    const response = await fetch(`${API_BASE}/api/recommend/ml`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ latitude, longitude, top_n: topN }),
+      signal,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => "Unknown error");
+      throw new Error(`ML recommender returned ${response.status}: ${errorText}`);
+    }
+
+    return response.json() as Promise<MLRecommendResponse>;
+  },
+
+  /**
+   * Calls POST /api/designs/recommend for multi-target ML design recommendations.
+   */
+  async recommendDesigns(
+    latitude: number,
+    longitude: number,
+    weights?: Partial<MLDesignScores>,
+    topN: number = 3,
+    signal?: AbortSignal
+  ): Promise<MLDesignRecommendResponse> {
+    const response = await fetch(`${API_BASE}/api/designs/recommend`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        latitude,
+        longitude,
+        weights: weights
+          ? {
+              comfort: weights.comfort ?? 25,
+              cost: weights.cost ?? 25,
+              safety: weights.safety ?? 25,
+              sustainability: weights.sustainability ?? 25,
+            }
+          : undefined,
+        top_n: topN,
+      }),
+      signal,
+    });
+
+    if (!response.ok) {
+      let message = `Server error (${response.status})`;
+      try {
+        const errorJson = await response.json();
+        if (errorJson?.detail?.message) {
+          message = errorJson.detail.message;
+        } else if (typeof errorJson?.detail === "string") {
+          message = errorJson.detail;
+        }
+      } catch {
+        const errorText = await response.text().catch(() => "");
+        if (errorText) message = errorText;
+      }
+      throw new Error(message);
+    }
+
+    return response.json() as Promise<MLDesignRecommendResponse>;
+  },
+
+  /**
+   * Calls POST /api/report to generate and download a comprehensive architectural assessment PDF.
+   */
+  async downloadReport(
+    params: {
+      latitude: number;
+      longitude: number;
+      weights?: Record<string, number>;
+      plot_size?: { width?: number; length?: number; w?: number; l?: number };
+    },
+    signal?: AbortSignal
+  ): Promise<Blob> {
+    const response = await fetch(`${API_BASE}/api/report`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(params),
+      signal,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => "Unknown error");
+      throw new Error(`Report generation failed (${response.status}): ${errorText}`);
+    }
+
+    return response.blob();
+  },
 };
+
 
