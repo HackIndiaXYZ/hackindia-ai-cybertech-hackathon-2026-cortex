@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # EcoShelter — Climate-Adaptive Vernacular Shelter Platform
 
 EcoShelter is a full-stack, climate-responsive architectural platform that analyzes local microclimates, predicts multi-criteria performance scores using machine learning surrogates, and dynamically recommends and visualizes 2D architectural plans and 3D vernacular shelters.
@@ -9,17 +10,28 @@ EcoShelter is a full-stack, climate-responsive architectural platform that analy
 ### Frontend (React + TypeScript + Vite + Three.js)
 ```bash
 cd frontend/client
+=======
+# Eco Shelter
+# start frontend 
+cd frontend
+>>>>>>> a874f38be1b5a82c01e446c3021158dd9ddf975e
 npm install
 npm run dev
 ```
 Development URL: `http://localhost:5173`
 
+<<<<<<< HEAD
 ### Backend (FastAPI + Python 3.11+)
 ```bash
 cd backend
 python -m venv venv
 .\venv\Scripts\Activate.ps1   # On Linux/macOS: source venv/bin/activate
 pip install -r requirements.txt
+=======
+# start backend 
+cd backend
+.\venv\Scripts\Activate.ps1
+>>>>>>> a874f38be1b5a82c01e446c3021158dd9ddf975e
 uvicorn app.main:app --reload
 ```
 API Documentation (Swagger UI): `http://localhost:8000/docs`
