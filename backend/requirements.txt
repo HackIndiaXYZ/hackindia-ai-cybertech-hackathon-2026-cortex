@@ -12,3 +12,5 @@ numpy>=1.26.0
 reportlab>=4.2.0
 scikit-learn>=1.4.0
 joblib>=1.3.0
+# AutoML backup forecaster
+flaml[automl]>=2.3.0

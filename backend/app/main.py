@@ -20,12 +20,14 @@ from app.api.routes.analysis import router as analysis_router
 from app.api.routes.climate import router as climate_router
 from app.api.routes.design import router as design_router
 from app.api.routes.designs import router as designs_router
+from app.api.routes.forecast import router as forecast_router
 from app.api.routes.ml_recommend import router as ml_recommend_router
 from app.api.routes.report import router as report_router
 from app.api.routes.requirements import router as requirements_router
 from app.api.routes.risk import router as risk_router
 from app.api.routes.zone import router as zone_router
 from app.core.config import settings
+from app.services import history_store, scheduler
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -49,11 +51,17 @@ async def lifespan(app: FastAPI):
     Application lifespan handler.
     Loads the Design ML surrogate model at startup (if available) while allowing
     the application to gracefully boot even if the model file is absent.
+    Also starts the background scheduler for daily history updates and weekly
+    AutoML retraining.
     """
     logger.info("Initializing application lifespan — loading ML model...")
     load_model()
+    scheduler.start_scheduler()
+    logger.info("Background scheduler started.")
     yield
     logger.info("Application shutting down.")
+    scheduler.stop_scheduler()
+    history_store.close_db()
 
 
 # ---------------------------------------------------------------------------
@@ -94,6 +102,7 @@ app.include_router(design_router, prefix="/api", tags=["Design Ranking"])
 app.include_router(designs_router, prefix="/api", tags=["Design ML Recommendation"])
 app.include_router(report_router, prefix="/api", tags=["Report"])
 app.include_router(ml_recommend_router, prefix="/api", tags=["ML Recommendation"])
+app.include_router(forecast_router, prefix="/api", tags=["Forecast Backup"])
 
 
 # ---------------------------------------------------------------------------
